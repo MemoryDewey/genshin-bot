@@ -1,0 +1,21 @@
+{
+  "verbose": false,
+  "debug": false,
+  "exec": "ts-node -r tsconfig-paths/register main.ts",
+  "ignore": [
+    "node_modules",
+    "./test",
+    "**/*.d.ts",
+    "*.test.ts",
+    "*.spec.ts",
+    "fixtures/*",
+    "test/**/*",
+    "docs/*"
+  ],
+  "events": {
+    "restart": ""
+  },
+  "watch": ["./framework", "./src", "./main.ts"],
+  "ext": "ts",
+  "inspect": true
+}

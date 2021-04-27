@@ -7,4 +7,5 @@ const configs = {
   authKey: envParsed.AUTH_KEY,
   qq: Number.isNaN(Number(envParsed.QQ)) ? 8080 : Number(envParsed.QQ),
 }
+
 export { configs }

@@ -6,9 +6,9 @@ const miraiConfig: MiraiApiHttpConfig = {
   port: configs.port,
   authKey: configs.authKey,
   cacheSize: 4096,
-  enableWebsocket: true,
 }
 
 const mirai = new Mirai(miraiConfig)
+const axios = mirai.axios
 
-export { mirai }
+export { mirai, axios }

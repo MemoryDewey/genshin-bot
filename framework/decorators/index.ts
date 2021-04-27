@@ -2,8 +2,15 @@ export const Module = (enable = true): ClassDecorator => {
   return target => Reflect.defineMetadata('module', enable, target)
 }
 
-export const OnKeyword = (message: string, onlyToMe = false): MethodDecorator => {
+export type eventType = 'keyword' | 'matchAll'
+export const eventMap = ['keyword', 'matchAll']
+
+export const EventConstructor = (key: eventType) => (
+  message: string,
+): MethodDecorator => {
   return (target, propertyKey, descriptor) => {
-    Reflect.defineMetadata('keyword', message, descriptor.value)
+    Reflect.defineMetadata(key, message, descriptor.value)
   }
 }
+
+export const OnMatchAll = EventConstructor('matchAll')
