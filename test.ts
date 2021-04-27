@@ -28,7 +28,7 @@ class TestModule {
     console.log('Get Word')
   }
 }
-
+// Mirai On Event -> type -> message -> switch[ MatchAll,Keyword ] -> message -> FN
 // eslint-disable-next-line @typescript-eslint/ban-types
 const mapEvent = (instance: object) => {
   const prototype = Object.getPrototypeOf(instance)
