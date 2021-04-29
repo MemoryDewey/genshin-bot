@@ -7,7 +7,7 @@ import { getImage } from '../utils/image'
 @Module()
 export class RateModule {
   @OnMatchAll('圣遗物评分')
-  async testMethod(bot: GroupMessage) {
+  private async testMethod(bot: GroupMessage) {
     const senderId = bot.sender.id
     const image = bot.get('Image')
     if (image == null) {

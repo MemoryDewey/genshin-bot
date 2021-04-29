@@ -1,5 +1,5 @@
 import { mirai } from 'framework'
-import { eventMap, eventType } from 'framework/decorators'
+import { eventMap, eventType } from 'framework/decorators/type'
 import { Type } from 'framework/interfaces/type.interface'
 
 function msgMatchAll(reflectMsg: string, fn: Function) {
@@ -14,7 +14,13 @@ export function methodEnable(T: Type) {
   return Reflect.getMetadata('module', T) as boolean
 }
 
-export function mapModule(instance: object) {
+export function mapModuleInjection(instance: object) {
+  const name = instance.constructor.name
+  const property = Object.getPrototypeOf(instance)
+  const propertyName = Object.getOwnPropertyNames(property)
+}
+
+export function mapModuleMethod(instance: object) {
   const name = instance.constructor.name
   const prototype = Object.getPrototypeOf(instance)
   const methodName = Object.getOwnPropertyNames(prototype).filter(

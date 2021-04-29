@@ -1,7 +1,7 @@
 import { mirai } from 'framework'
 import { configs } from 'framework/config'
 import 'reflect-metadata'
-import { mapModule, methodEnable } from './decorators/mapping'
+import { mapModuleInjection, mapModuleMethod, methodEnable } from './decorators/mapping'
 import { Type } from 'framework/interfaces/type.interface'
 
 export async function loadModules(modules: Type[], callback?: () => void) {
@@ -11,7 +11,8 @@ export async function loadModules(modules: Type[], callback?: () => void) {
     })
     .map(T => {
       const t = new T()
-      mapModule(t)
+      mapModuleInjection(t)
+      mapModuleMethod(t)
     })
   await mirai.link(configs.qq)
   if (callback) {
