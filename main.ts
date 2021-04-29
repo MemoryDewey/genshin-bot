@@ -7,4 +7,6 @@ async function app() {
   await loadModules(dictToArray(Module))
   mirai.listen()
 }
-app()
+;(async () => {
+  await app()
+})()

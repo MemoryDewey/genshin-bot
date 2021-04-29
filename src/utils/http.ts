@@ -9,4 +9,12 @@ export class Http {
       baseURL,
     })
   }
+
+  public get<T>(url: string, params: object) {
+    return this.instance.get<T>(url, { params })
+  }
+
+  public post<T>(url: string, data: object) {
+    return this.instance.post<T>(url, data)
+  }
 }

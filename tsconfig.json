@@ -6,10 +6,22 @@
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "allowSyntheticDefaultImports": true,
-    "lib": ["ES2020"],
+    "lib": [
+      "ES2020"
+    ],
+    "rootDirs": [
+      "src",
+      "framework"
+    ],
     "paths": {
-      "src": ["src"],
-      "framework": ["framework"]
+      "src": [
+        "src",
+        "src/*"
+      ],
+      "framework": [
+        "framework",
+        "framework/*"
+      ]
     },
     "target": "es2017",
     "sourceMap": true,

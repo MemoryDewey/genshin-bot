@@ -1,4 +1,4 @@
-import { axios } from 'framework'
+import axios from 'axios'
 
 export async function getImage(url: string, encoding: 'base64' | 'buffer' = 'base64') {
   try {

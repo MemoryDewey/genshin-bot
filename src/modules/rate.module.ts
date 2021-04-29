@@ -1,11 +1,14 @@
-import { Module, OnMatchAll } from 'framework/decorators'
+import { Inject, Module, OnMatchAll } from 'framework/decorators'
 import { GroupMessage } from 'mirai-ts/dist/types/message-type'
-import { genAtMsg } from 'src/utils/bot'
-import { axios } from 'framework'
-import { getImage } from '../utils/image'
+import { AxiosError } from 'axios'
+import { OcrResponse, RateError } from 'src/interfaces'
+import { genAtMsg, getImage, Http } from 'src/utils'
 
 @Module()
 export class RateModule {
+  @Inject('https://api.genshin.pub/api')
+  private http: Http
+
   @OnMatchAll('圣遗物评分')
   private async testMethod(bot: GroupMessage) {
     const senderId = bot.sender.id
@@ -20,12 +23,14 @@ export class RateModule {
     }
     const imgBase64 = await getImage(image.url)
     try {
-      const res = await axios.post('https://api.genshin.pub/api/v1/app/ocr', {
+      const res = await this.http.post<OcrResponse>('/v1/app/ocr', {
         image: imgBase64,
       })
       await bot.reply(genAtMsg(senderId, JSON.stringify(res.data)))
     } catch (e) {
-      await bot.reply(genAtMsg(senderId, '网站解析圣遗物错误'))
+      const error = e as AxiosError
+      const data = error.response.data as RateError
+      await bot.reply(genAtMsg(senderId, data.message))
     }
   }
 }

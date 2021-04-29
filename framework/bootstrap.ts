@@ -1,7 +1,11 @@
 import { mirai } from 'framework'
 import { configs } from 'framework/config'
 import 'reflect-metadata'
-import { mapModuleInjection, mapModuleMethod, methodEnable } from './decorators/mapping'
+import {
+  mapModuleInjection,
+  mapModuleMethod,
+  methodEnable,
+} from 'framework/decorators/mapping'
 import { Type } from 'framework/interfaces/type.interface'
 
 export async function loadModules(modules: Type[], callback?: () => void) {

@@ -4,9 +4,9 @@ import {
   MODULE_METADATA,
   ON_MATCH_ALL_METADATA,
 } from 'framework/decorators/metadata'
-import { eventType } from 'framework/decorators/type'
+import { EventType, InjectMetadataValue } from 'framework/decorators/type'
 
-const EventConstructor = (key: eventType) => (message: string): MethodDecorator => {
+const EventConstructor = (key: EventType) => (message: string): MethodDecorator => {
   return (target, propertyKey, descriptor) => {
     Reflect.defineMetadata(key, message, descriptor.value)
   }
@@ -36,7 +36,17 @@ export const Injectable = (name?: string): ClassDecorator => {
  * @constructor
  */
 export const Inject = (...args: any[]): PropertyDecorator => {
-  return target => Reflect.defineMetadata(INJECT_METADATA, args, target)
+  return (target, propertyKey) => {
+    return Reflect.defineMetadata(
+      INJECT_METADATA,
+      {
+        type: Reflect.getMetadata('design:type', target, propertyKey),
+        key: propertyKey,
+        args,
+      } as InjectMetadataValue,
+      target,
+    )
+  }
 }
 
 /**
