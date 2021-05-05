@@ -1,0 +1,1 @@
+export type ImageType = 'artifacts'

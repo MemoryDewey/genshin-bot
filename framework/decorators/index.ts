@@ -1,14 +1,16 @@
 import {
-  INJECT_METADATA,
-  INJECTABLE_METADATA,
   MODULE_METADATA,
   ON_MATCH_ALL_METADATA,
+  ON_PREFIX_METADATA,
 } from 'framework/decorators/metadata'
 import { EventType, InjectMetadataValue } from 'framework/decorators/type'
 
-const EventConstructor = (key: EventType) => (message: string): MethodDecorator => {
+const EventConstructor = (key: EventType) => (
+  message: string,
+  isAt = true,
+): MethodDecorator => {
   return (target, propertyKey, descriptor) => {
-    Reflect.defineMetadata(key, message, descriptor.value)
+    Reflect.defineMetadata(key, { message, isAt }, descriptor.value)
   }
 }
 
@@ -27,7 +29,7 @@ export const Module = (enable = true): ClassDecorator => {
  * @constructor
  */
 export const Injectable = (name?: string): ClassDecorator => {
-  return target => Reflect.defineMetadata(INJECTABLE_METADATA, name, target)
+  return target => Reflect.defineMetadata(target.name, name, target)
 }
 
 /**
@@ -37,10 +39,12 @@ export const Injectable = (name?: string): ClassDecorator => {
  */
 export const Inject = (...args: any[]): PropertyDecorator => {
   return (target, propertyKey) => {
+    const type = Reflect.getMetadata('design:type', target, propertyKey)
+    target[propertyKey] = null
     return Reflect.defineMetadata(
-      INJECT_METADATA,
+      propertyKey,
       {
-        type: Reflect.getMetadata('design:type', target, propertyKey),
+        type,
         key: propertyKey,
         args,
       } as InjectMetadataValue,
@@ -53,3 +57,8 @@ export const Inject = (...args: any[]): PropertyDecorator => {
  * 完全匹配
  */
 export const OnMatchAll = EventConstructor(ON_MATCH_ALL_METADATA)
+
+/**
+ * 前缀匹配
+ */
+export const OnPrefix = EventConstructor(ON_PREFIX_METADATA)

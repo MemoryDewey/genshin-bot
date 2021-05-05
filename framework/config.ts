@@ -1,4 +1,5 @@
 import { config } from 'dotenv'
+import { join } from 'path'
 
 const envParsed = config().parsed
 const configs = {
@@ -8,4 +9,7 @@ const configs = {
   qq: Number.isNaN(Number(envParsed.QQ)) ? 8080 : Number(envParsed.QQ),
 }
 
-export { configs }
+const DATA_PATH = join(envParsed.MIRAI_DATA_PATH)
+const ROOT_PATH = join(__dirname, '../')
+
+export { configs, DATA_PATH, ROOT_PATH }

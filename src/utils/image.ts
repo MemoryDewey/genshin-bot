@@ -1,6 +1,13 @@
 import axios from 'axios'
+import { existsSync } from 'fs'
+import { join } from 'path'
+import { DATA_PATH } from 'framework/config'
+import { ImageType } from '../types'
 
-export async function getImage(url: string, encoding: 'base64' | 'buffer' = 'base64') {
+export async function getImageFromUrl(
+  url: string,
+  encoding: 'base64' | 'buffer' = 'base64',
+) {
   try {
     const res = await axios.get(url, { responseType: 'arraybuffer' })
     const imgBuffer = res.data as ArrayBuffer
@@ -12,4 +19,13 @@ export async function getImage(url: string, encoding: 'base64' | 'buffer' = 'bas
   } catch (e) {
     return false
   }
+}
+
+export function checkImageExist(type: ImageType, fileName: string, fileType = 'png') {
+  const path = `./genshin/${type}/${fileName}.${fileType}`
+  const fullPath = join(DATA_PATH, '/images', path)
+  if (existsSync(fullPath)) {
+    return path
+  }
+  return `./genshin/${type}/default.png`
 }

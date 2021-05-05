@@ -6,9 +6,7 @@
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "allowSyntheticDefaultImports": true,
-    "lib": [
-      "ES2020"
-    ],
+    "lib": ["ES2020"],
     "rootDirs": [
       "src",
       "framework"
@@ -27,6 +25,7 @@
     "sourceMap": true,
     "outDir": "./dist",
     "baseUrl": "./",
-    "incremental": true
+    "incremental": true,
+    "esModuleInterop": true
   }
 }

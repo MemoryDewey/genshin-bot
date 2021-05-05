@@ -1,18 +1,38 @@
 import { mirai } from 'framework'
-import { EventMap, EventType, InjectMetadataValue } from './type'
+import { EventMap, EventType, InjectMetadataValue, MsgFunc } from './type'
 import { Type } from 'framework/interfaces/type.interface'
-import { INJECT_METADATA, MODULE_METADATA, ON_MATCH_ALL_METADATA } from './metadata'
+import { MODULE_METADATA, ON_MATCH_ALL_METADATA, ON_PREFIX_METADATA } from './metadata'
 
 /**
  * 完全匹配
  * @param instance 实体对象
  * @param item 方法名
- * @param reflectMsg 注入的msg
+ * @param msg 注入的msg
+ * @param isAt
  */
-function msgMatchAll(instance: object, item: string, reflectMsg: string) {
+const msgMatchAll: MsgFunc = (instance, item, msg, isAt) => {
   mirai.on('GroupMessage', cb => {
-    if (cb.isAt() && cb.plain.trim() == reflectMsg) {
+    if ((isAt ? cb.isAt() : true) && cb.plain.trim() == msg) {
       instance[item](cb)
+    }
+  })
+}
+
+/**
+ * 前缀匹配
+ * @param instance
+ * @param item
+ * @param msg
+ * @param isAt
+ */
+const msgPrefix: MsgFunc = (instance, item, msg, isAt) => {
+  mirai.on('GroupMessage', cb => {
+    const plainArr = cb.plain.trim().split(' ')
+    if ((isAt ? cb.isAt() : true) && plainArr.length > 1 && plainArr[0] == msg) {
+      instance[item](
+        cb,
+        plainArr.filter((value, index) => index != 0 && value),
+      )
     }
   })
 }
@@ -22,8 +42,10 @@ export function methodEnable(T: Type) {
 }
 
 export function mapModuleInjection(instance: object) {
-  const metadata = Reflect.getMetadata(INJECT_METADATA, instance) as InjectMetadataValue
-  instance[metadata.key] = new metadata.type(...metadata.args)
+  Object.keys(Object.getPrototypeOf(instance)).forEach(key => {
+    const metadata = Reflect.getMetadata(key, instance) as InjectMetadataValue
+    instance[metadata.key] = new metadata.type(...metadata.args)
+  })
 }
 
 export function mapModuleMethod(instance: object) {
@@ -34,10 +56,16 @@ export function mapModuleMethod(instance: object) {
   )
   methodName.map(item => {
     EventMap.map(event => {
-      const reflectMsg = Reflect.getMetadata(event, prototype[item]) as string
+      const reflectArg = Reflect.getMetadata(event, prototype[item]) as {
+        message: string
+        isAt: boolean
+      }
       switch (event as EventType) {
         case ON_MATCH_ALL_METADATA:
-          msgMatchAll(instance, item, reflectMsg)
+          msgMatchAll(instance, item, reflectArg?.message, reflectArg?.isAt)
+          break
+        case ON_PREFIX_METADATA:
+          msgPrefix(instance, item, reflectArg?.message, reflectArg?.isAt)
           break
       }
     })
