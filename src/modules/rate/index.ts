@@ -5,12 +5,16 @@ import { OcrResponse, RateError } from 'src/interfaces'
 import { genAtMsg, getImage, Http } from 'src/utils'
 
 @Module()
-export class RateModule {
+export class Index {
   @Inject('https://api.genshin.pub/api')
   private http: Http
 
+  private ocrResToStr(data: OcrResponse) {
+    return ''
+  }
+
   @OnMatchAll('圣遗物评分')
-  private async testMethod(bot: GroupMessage) {
+  private async uploadArtifacts(bot: GroupMessage) {
     const senderId = bot.sender.id
     const image = bot.get('Image')
     if (image == null) {

@@ -8,6 +8,11 @@ import {
 } from 'framework/decorators/mapping'
 import { Type } from 'framework/interfaces/type.interface'
 
+/**
+ * 加载模块
+ * @param modules 模块
+ * @param callback mirai回调
+ */
 export async function loadModules(modules: Type[], callback?: () => void) {
   modules
     .filter(T => {

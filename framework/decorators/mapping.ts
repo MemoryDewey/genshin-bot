@@ -3,6 +3,12 @@ import { EventMap, EventType, InjectMetadataValue } from './type'
 import { Type } from 'framework/interfaces/type.interface'
 import { INJECT_METADATA, MODULE_METADATA, ON_MATCH_ALL_METADATA } from './metadata'
 
+/**
+ * 完全匹配
+ * @param instance 实体对象
+ * @param item 方法名
+ * @param reflectMsg 注入的msg
+ */
 function msgMatchAll(instance: object, item: string, reflectMsg: string) {
   mirai.on('GroupMessage', cb => {
     if (cb.isAt() && cb.plain.trim() == reflectMsg) {
