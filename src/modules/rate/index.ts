@@ -40,11 +40,10 @@ export class RateModule {
     const subScore = calcSubPropScore(ocr.sub_item)
     if (mainScore == -1 || subScore == -1) {
       await bot.reply(
-        genAtPlainImageMsg(
-          bot.sender.id,
-          [`${mainScore == -1 ? '主' : '副'}词条输入有误\n`, ...this.ocrResToStr(ocr)],
-          this.getImgPath(ocr.name),
-        ),
+        genAtPlainMsg(bot.sender.id, [
+          `${mainScore == -1 ? '主' : '副'}词条输入有误\n`,
+          ...this.ocrResToStr(ocr),
+        ]),
       )
       return
     }
