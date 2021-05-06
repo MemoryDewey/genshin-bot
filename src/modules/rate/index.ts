@@ -39,6 +39,7 @@ export class RateModule {
     const mainScore = calcMainPropScore(ocr.main_item)
     const subScore = calcSubPropScore(ocr.sub_item)
     if (mainScore == -1 || subScore == -1) {
+      this.db.set(`${this.userUploadKey}:${bot.sender.id}`, ocr)
       await bot.reply(
         genAtPlainMsg(bot.sender.id, [
           `${mainScore == -1 ? '主' : '副'}词条输入有误\n`,
