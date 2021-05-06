@@ -1,4 +1,4 @@
-import { PropertyTypes } from 'src/types'
+import { MainPropertyTypes, Position, SubPropertyTypes } from 'src/types'
 
 export interface RateError {
   message: string
@@ -6,31 +6,22 @@ export interface RateError {
 }
 
 export interface MainItem {
-  type: keyof PropertyTypes
+  type: keyof typeof MainPropertyTypes
   name: string
   value: string
 }
 
 export interface SubItem {
-  type: keyof PropertyTypes
+  type: keyof typeof SubPropertyTypes
   name: string
   value: string
 }
 
 export interface OcrResponse {
   name: string
-  pos: string
+  pos: Position
   star: number
   level: number
   main_item: MainItem
   sub_item: SubItem[]
-}
-
-export interface RateResponse {
-  total_score: number
-  total_percent: string
-  main_score: number
-  main_percent: string
-  sub_score: number
-  sub_percent: string
 }

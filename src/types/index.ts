@@ -1,2 +1,2 @@
-export * from './rate.type'
+export * from './artifact.type'
 export * from './image.type'

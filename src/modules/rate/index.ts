@@ -1,7 +1,7 @@
 import { Inject, Module, OnMatchAll, OnPrefix } from 'framework/decorators'
 import { GroupMessage } from 'mirai-ts/dist/types/message-type'
 import { AxiosError } from 'axios'
-import { OcrResponse, RateError, RateResponse } from 'src/interfaces'
+import { OcrResponse, RateError } from 'src/interfaces'
 import {
   checkImageExist,
   genAtPlainImageMsg,
@@ -11,6 +11,7 @@ import {
   Database,
 } from 'src/utils'
 import { Message } from 'mirai-ts'
+import { calcMainPropScore, calcSubPropScore } from './uitl'
 
 @Module()
 export class RateModule {
@@ -35,26 +36,27 @@ export class RateModule {
   }
 
   protected async rateArtifacts(bot: GroupMessage, ocr: OcrResponse) {
-    try {
-      const { data } = await this.http.post<RateResponse>('/v1/relic/rate', ocr)
-      await bot.reply(
-        genAtPlainMsg(
-          bot.sender.id,
-          `总分: ${data.total_percent}\n` + `副词条分数: ${data.sub_percent}`,
-        ),
-      )
-    } catch (e) {
-      const error = e as AxiosError
-      const errRes = error.response.data as RateError
-      this.db.set(`${this.userUploadKey}:${bot.sender.id}`, ocr)
+    const mainScore = calcMainPropScore(ocr.main_item)
+    const subScore = calcSubPropScore(ocr.sub_item)
+    if (mainScore == -1 || subScore == -1) {
       await bot.reply(
         genAtPlainImageMsg(
           bot.sender.id,
-          [`${errRes.message}\n`, ...this.ocrResToStr(ocr)],
+          [`${mainScore == -1 ? '主' : '副'}词条输入有误\n`, ...this.ocrResToStr(ocr)],
           this.getImgPath(ocr.name),
         ),
       )
+      return
     }
+    await bot.reply(
+      genAtPlainMsg(
+        bot.sender.id,
+        '\n' +
+          `总分: ${((mainScore + subScore) * 100) / 100}\n` +
+          `主词条分数: ${mainScore}\n` +
+          `副词条分数: ${subScore}`,
+      ),
+    )
   }
 
   @OnMatchAll('评分网站', false)
