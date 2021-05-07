@@ -56,10 +56,10 @@ export async function setRatedImage(
     ctx.fillStyle = '#dbcfc0'
     ctx.font = '24px Sans'
     ctx.fillText(`最终得分`, 32, 108)
-    ctx.fillText(`${scores.main} + ${scores.sub}`, 32, 145)
+    ctx.fillText(`${scores.main.toFixed(2)} + ${scores.sub.toFixed(2)}`, 32, 145)
     ctx.fillStyle = 'gold'
     ctx.font = '90px Sans'
-    ctx.fillText(`${scores.total}`, 32, 255)
+    ctx.fillText(`${scores.total.toFixed(2)}`, 32, 255)
 
     // 圣遗物属性
     const star = join(ROOT_PATH, artifactsPath, './star.png')
