@@ -15,6 +15,12 @@ import {
   SubPercentWeightRate,
 } from './constant'
 
+/**
+ * 设置圣遗物评分图片
+ * @param info
+ * @param scores
+ * @param id
+ */
 export async function setRatedImage(
   info: OcrResponse,
   scores: {
@@ -149,7 +155,7 @@ export function calcMainPropScore(prop: MainItem): number {
   }
   let value = 0
   if (!isPercent && prop.type != 'em') {
-    value = weight * 1.286173
+    value = weight * 0.7
   } else {
     switch (prop.type) {
       case 'atk':
@@ -162,16 +168,16 @@ export function calcMainPropScore(prop: MainItem): number {
       case 'geo':
       case 'anemo':
       case 'cryo':
-        value = weight * 1.607717
+        value = weight
         break
       case 'df':
       case 'em':
       case 'hp':
-        value = weight * 1.446945
+        value = weight * 0.9
         break
       case 'heal':
       case 'er':
-        value = weight * 1.286173
+        value = weight * 0.8
         break
     }
   }
@@ -187,19 +193,21 @@ export function calcSubPropScore(props: SubItem[]): number {
     }
     const isPercent = prop.value.includes('%')
     if (!isPercent && prop.type != 'em') {
-      total += weight * 1.139601
+      total += weight * 0.538461
     } else {
       switch (prop.type) {
         case 'cd':
         case 'cr':
         case 'atk':
-          total += weight * 1.424501424
+          total += weight * 1.962962
           break
         case 'df':
         case 'hp':
+          total += weight * 1.393162
+          break
         case 'em':
         case 'er':
-          total += weight * 1.282051
+          total += weight * 0.965811
           break
       }
     }
