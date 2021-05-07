@@ -193,21 +193,21 @@ export function calcSubPropScore(props: SubItem[]): number {
     }
     const isPercent = prop.value.includes('%')
     if (!isPercent && prop.type != 'em') {
-      total += weight * 0.538461
+      total += weight * 0.605769
     } else {
       switch (prop.type) {
         case 'cd':
         case 'cr':
         case 'atk':
-          total += weight * 1.962962
+          total += weight * 2.208333
           break
         case 'df':
         case 'hp':
-          total += weight * 1.393162
+          total += weight * 1.567307
           break
         case 'em':
         case 'er':
-          total += weight * 0.965811
+          total += weight * 1.086538
           break
       }
     }
