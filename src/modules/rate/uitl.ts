@@ -198,12 +198,14 @@ export function calcSubPropScore(props: SubItem[]): number {
       switch (prop.type) {
         case 'cd':
         case 'cr':
-        case 'atk':
           total += weight * 2.208333
+          break
+        case 'atk':
+          total += weight * 1.727564
           break
         case 'df':
         case 'hp':
-          total += weight * 1.567307
+          total += weight * 1.407051
           break
         case 'em':
         case 'er':
