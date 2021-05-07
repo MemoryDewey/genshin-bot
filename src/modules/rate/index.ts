@@ -11,7 +11,8 @@ import {
   Database,
 } from 'src/utils'
 import { Message } from 'mirai-ts'
-import { calcMainPropScore, calcSubPropScore } from './uitl'
+import { calcMainPropScore, calcSubPropScore, setRatedImage } from './uitl'
+import { ImageType } from '../../types'
 
 @Module()
 export class RateModule {
@@ -31,15 +32,16 @@ export class RateModule {
     ]
   }
 
-  protected getImgPath(name: string) {
-    return checkImageExist('artifacts', name)
+  protected getImgPath(type: ImageType, name: string) {
+    return checkImageExist(type, name)
   }
 
   protected async rateArtifacts(bot: GroupMessage, ocr: OcrResponse) {
+    const id = bot.sender.id
     const mainScore = calcMainPropScore(ocr.main_item)
     const subScore = calcSubPropScore(ocr.sub_item)
     if (mainScore == -1 || subScore == -1) {
-      this.db.set(`${this.userUploadKey}:${bot.sender.id}`, ocr)
+      this.db.set(`${this.userUploadKey}:${id}`, ocr)
       await bot.reply(
         genAtPlainMsg(bot.sender.id, [
           `${mainScore == -1 ? '主' : '副'}词条输入有误\n`,
@@ -48,11 +50,16 @@ export class RateModule {
       )
       return
     }
+    const total = ((mainScore + subScore) * 100) / 100
+    if (await setRatedImage(ocr, { main: mainScore, sub: subScore, total }, id)) {
+      await bot.reply(genAtPlainImageMsg(id, [], this.getImgPath('rate', id.toString())))
+      return
+    }
     await bot.reply(
       genAtPlainMsg(
-        bot.sender.id,
+        id,
         '\n' +
-          `总分: ${((mainScore + subScore) * 100) / 100}\n` +
+          `总分: ${total}\n` +
           `主词条分数: ${mainScore}\n` +
           `副词条分数: ${subScore}`,
       ),
@@ -81,6 +88,9 @@ export class RateModule {
       const { data } = await this.http.post<OcrResponse>('/v1/app/ocr', {
         image: imgBase64,
       })
+      if (data.sub_item.length < 4) {
+        await bot.reply(genAtPlainMsg(senderId, '请上传4个词条的圣遗物'))
+      }
       await this.rateArtifacts(bot, data)
     } catch (e) {
       const error = e as AxiosError
