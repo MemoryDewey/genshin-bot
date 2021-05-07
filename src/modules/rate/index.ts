@@ -95,7 +95,13 @@ export class RateModule {
     } catch (e) {
       const error = e as AxiosError
       const data = error.response.data as RateError
-      await bot.reply(genAtPlainMsg(senderId, data.message))
+      await bot.reply(
+        genAtPlainImageMsg(
+          senderId,
+          data.message,
+          this.getImgPath('artifacts', 'uploadExample'),
+        ),
+      )
     }
   }
 
