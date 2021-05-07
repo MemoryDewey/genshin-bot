@@ -1,7 +1,7 @@
 import { writeFileSync } from 'fs'
 import { join } from 'path'
-import { DATA_PATH, ROOT_PATH } from '../../../framework/config'
-import { createCanvas, loadImage } from 'canvas'
+import { DATA_PATH, ROOT_PATH } from 'framework/config'
+import { createCanvas, loadImage, registerFont } from 'canvas'
 import { readFileSync } from 'fs'
 import { MainItem, OcrResponse, SubItem } from 'src/interfaces'
 import {
@@ -25,6 +25,8 @@ export async function setRatedImage(
   id: number | string,
 ) {
   try {
+    const fontPath = join(ROOT_PATH, './src/assets/font/NotoSansSC-Regular.otf')
+    registerFont(fontPath, { family: 'Sans' })
     const canvas = createCanvas(641, 530)
     const ctx = canvas.getContext('2d')
     // 图片路径
@@ -47,16 +49,16 @@ export async function setRatedImage(
     // 圣遗物名称
     ctx.textBaseline = 'bottom'
     ctx.fillStyle = '#dbac70'
-    ctx.font = 'bold 36px sans-serif'
+    ctx.font = 'bold 36px Sans'
     ctx.fillText(info.name, 32, 64)
 
     //圣遗物分数
     ctx.fillStyle = '#dbcfc0'
-    ctx.font = '24px sans-serif'
+    ctx.font = '24px Sans'
     ctx.fillText(`最终得分`, 32, 108)
     ctx.fillText(`${scores.main} + ${scores.sub}`, 32, 145)
     ctx.fillStyle = 'gold'
-    ctx.font = '90px sans-serif'
+    ctx.font = '90px Sans'
     ctx.fillText(`${scores.total}`, 32, 255)
 
     // 圣遗物属性
@@ -68,12 +70,12 @@ export async function setRatedImage(
     // 主词条
     ctx.drawImage(starImg, 32, 300, 24, 24)
     ctx.fillStyle = '#495366'
-    ctx.font = 'bold 28px sans-serif'
+    ctx.font = 'bold 28px Sans'
     ctx.fillText(info.main_item.name, 80, 325)
     ctx.fillText(info.main_item.value, 470, 325)
     // 副词条
     ctx.fillStyle = '#495366'
-    ctx.font = 'bold 20px sans-serif'
+    ctx.font = 'bold 20px Sans'
     ctx.drawImage(dotImg, 35, 345, 16, 16)
     ctx.fillText(info.sub_item[0].name, 80, 365)
     ctx.fillText(info.sub_item[0].value, 470, 365)
