@@ -12,7 +12,7 @@ import {
 } from 'src/utils'
 import { Message } from 'mirai-ts'
 import { calcMainPropScore, calcSubPropScore, setRatedImage } from './uitl'
-import { ImageType } from '../../types'
+import { ImageType } from 'src/types'
 
 @Module()
 export class RateModule {
