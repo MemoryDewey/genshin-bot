@@ -1,1 +1,1 @@
-export type ImageType = 'artifacts' | 'rate'
+export type ImageType = 'artifacts' | 'rate' | 'almanac'

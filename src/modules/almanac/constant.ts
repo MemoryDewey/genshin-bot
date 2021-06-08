@@ -1,20 +1,20 @@
 import { readJsonFile } from 'src/utils'
 import path from 'path'
 
-type Almanac = {
-  [key: string]: {
-    buff: string[]
-    debuff: string[]
-  }
+export type Almanac = {
+  buff: string[]
+  debuff: string[]
 }
 
-const listData = readJsonFile<Almanac>(path.join(__dirname, 'almanac-list.json'))
-
-/**
- * 使用随机种子随机选择列表中的元素，相同的种子和列表将返回同样的输出
- * @param arr
- */
-function seedRandomList(arr: string[]) {
-  const index = Math.floor(Math.random() * arr.length)
-  return arr[index]
+export type Almanacs = {
+  [key: string]: Almanac
 }
+
+export interface AlmanacsStore {
+  timestamp: number
+  path: string
+}
+
+export const chineseMap = ['', '一', '二', '三', '四', '五', '六', '七', '八', '九']
+
+export const listData = readJsonFile<Almanacs>(path.join(__dirname, 'almanac-list.json'))

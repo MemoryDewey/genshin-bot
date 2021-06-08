@@ -17,6 +17,7 @@
     "dotenv": "^8.2.0",
     "lowdb": "^1.0.0",
     "mirai-ts": "^1.0.4",
+    "moment": "^2.29.1",
     "reflect-metadata": "^0.1.13"
   },
   "devDependencies": {
