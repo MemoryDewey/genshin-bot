@@ -6,8 +6,8 @@ import FileAsync from 'lowdb/adapters/FileAsync'
 export class Database {
   private db: LowdbAsync<any>
 
-  constructor() {
-    const adapter = new FileAsync('db.json')
+  constructor(dbName = 'db') {
+    const adapter = new FileAsync(`./src/database/${dbName}.json`)
     low(adapter).then(db => {
       this.db = db
     })

@@ -19,7 +19,7 @@ export class RateModule {
   @Inject('https://api.genshin.pub/api')
   private http: Http
 
-  @Inject()
+  @Inject('rate')
   private db: Database
 
   private readonly userUploadKey = 'artifacts'

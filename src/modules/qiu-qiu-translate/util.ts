@@ -1,9 +1,8 @@
 import { readJsonFile } from 'src/utils'
 import { Dictionary } from 'src/interfaces'
+import path from 'path'
 
-const dictionary = readJsonFile<Dictionary>(
-  './src/modules/qiu-qiu-translate/dictionary.json',
-)
+const dictionary = readJsonFile<Dictionary>(path.join(__dirname, 'dictionary.json'))
 const QiuQiuWord = dictionary.word
 const QiuQiuPhrase = dictionary.phrase
 
