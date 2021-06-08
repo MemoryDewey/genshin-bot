@@ -13,20 +13,18 @@ export class QiuQiuTranslate {
   @OnPrefix('丘丘一下', false)
   private async qiuQiuWord(bot: GroupMessage, extraMsg: string[]) {
     if (extraMsg.length == 0) {
-      return
+      return this.suffix
     }
-    let msg = qiuQiuWordTranslation(extraMsg)
-    msg += this.suffix
+    const msg = qiuQiuWordTranslation(extraMsg)
     await bot.reply(msg, false)
   }
 
   @OnPrefix('丘丘词典', false)
   private async qiuQiuPhrase(bot: GroupMessage, extraMsg: string[]) {
     if (extraMsg.length == 0) {
-      return
+      return this.suffix
     }
-    let msg = qiuQiuPhraseTranslation(extraMsg.join(' '))
-    msg += this.suffix
+    const msg = qiuQiuPhraseTranslation(extraMsg.join(' '))
     await bot.reply(msg, false)
   }
 }
