@@ -1,5 +1,6 @@
 import { config } from 'dotenv'
 import { join } from 'path'
+import { type } from 'os'
 
 const envParsed = config().parsed
 const configs = {
@@ -9,7 +10,9 @@ const configs = {
   qq: Number.isNaN(Number(envParsed.QQ)) ? 8080 : Number(envParsed.QQ),
 }
 
-const DATA_PATH = join(envParsed.MIRAI_DATA_PATH)
+const DATA_PATH = type().toLowerCase().includes('windows')
+  ? join(envParsed.MIRAI_DATA_PATH_WIN)
+  : join(envParsed.MIRAI_DATA_PATH_LINUX)
 const ROOT_PATH = join(__dirname, '../')
 
 export { configs, DATA_PATH, ROOT_PATH }
