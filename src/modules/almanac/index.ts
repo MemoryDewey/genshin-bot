@@ -12,15 +12,15 @@ export class Almanac {
   @OnMatchAll('黄历', false)
   private async getAlmanac(bot: GroupMessage) {
     const senderId = bot.sender.id
-    let store = this.db.get(senderId.toString()).value() as AlmanacsStore
+    let store = this.db.get(getTodayTimestamp().toString()).value() as AlmanacsStore
     if (!store || (store && store.timestamp != getTodayTimestamp())) {
-      await generateAlmanac(senderId)
+      await generateAlmanac()
       store = {
         timestamp: getTodayTimestamp(),
-        path: checkImageExist('almanac', senderId.toString()),
+        path: checkImageExist('almanac', getTodayTimestamp().toString()),
       }
     }
-    this.db.set(senderId.toString(), store)
+    this.db.set(getTodayTimestamp().toString(), store)
     await bot.reply(genAtPlainImageMsg(senderId, '', store.path))
   }
 }

@@ -90,7 +90,7 @@ export function getTodayTimestamp() {
   return new Date().setHours(0, 0, 0, 0)
 }
 
-export async function generateAlmanac(id: number) {
+export async function generateAlmanac() {
   const todayLuckMap = new Map<string, Almanac>()
   const keys = Object.keys(listData)
   while (todayLuckMap.size < 6) {
@@ -101,7 +101,7 @@ export async function generateAlmanac(id: number) {
     todayLuckMap.set(r, listData[r])
   }
   try {
-    await drawImage(todayLuckMap, id)
+    await drawImage(todayLuckMap, getTodayTimestamp())
     return true
   } catch (e) {
     console.log(e)
