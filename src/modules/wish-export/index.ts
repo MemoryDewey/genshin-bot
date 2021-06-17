@@ -49,6 +49,10 @@ export class WishExportModule {
     const qq = bot.sender.id
     const name = extraMsg[0] as unknown as keyof typeof GachaInfo
     const store = this.db.get(qq.toString()).value() as WishParam
+    if (!store) {
+      await bot.reply(genAtPlainMsg(qq, '先私聊我添加查询链接才能进行抽卡分析哦'))
+      return
+    }
     await bot.reply(genAtPlainMsg(qq, '正在查询中，不要急哦'))
     const info = await fetchGachaInfo(name, this.http, qq, store)
     await generateGachaImg(qq, name, info.result)
