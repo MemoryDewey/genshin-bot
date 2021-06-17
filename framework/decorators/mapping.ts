@@ -1,7 +1,13 @@
 import { mirai } from 'framework'
 import { EventMap, EventType, InjectMetadataValue, MsgFunc } from './type'
 import { Type } from 'framework/interfaces/type.interface'
-import { MODULE_METADATA, ON_MATCH_ALL_METADATA, ON_PREFIX_METADATA } from './metadata'
+import {
+  MODULE_METADATA,
+  ON_MATCH_ALL_METADATA,
+  ON_PREFIX_METADATA,
+  ON_PRIVATE_PREFIX,
+} from './metadata'
+import { FriendMessage, TempMessage } from 'mirai-ts/dist/types/message-type'
 
 /**
  * 完全匹配
@@ -37,6 +43,24 @@ const msgPrefix: MsgFunc = (instance, item, msg, isAt) => {
   })
 }
 
+const privatePrefix: MsgFunc = (instance, item, msg) => {
+  const func = (cb: TempMessage | FriendMessage) => {
+    const plainArr = cb.plain.trim().split(' ')
+    if (plainArr.length > 1 && plainArr[0] == msg) {
+      instance[item](
+        cb,
+        plainArr.filter((value, index) => index != 0 && value),
+      )
+    }
+  }
+  mirai.on('TempMessage', cb => {
+    func(cb)
+  })
+  mirai.on('FriendMessage', cb => {
+    func(cb)
+  })
+}
+
 export function methodEnable(T: Type) {
   return Reflect.getMetadata(MODULE_METADATA, T) as boolean
 }
@@ -67,6 +91,8 @@ export function mapModuleMethod(instance: object) {
         case ON_PREFIX_METADATA:
           msgPrefix(instance, item, reflectArg?.message, reflectArg?.isAt)
           break
+        case ON_PRIVATE_PREFIX:
+          privatePrefix(instance, item, reflectArg?.message)
       }
     })
   })

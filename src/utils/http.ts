@@ -3,7 +3,7 @@ import { Injectable } from 'framework/decorators'
 
 @Injectable()
 export class Http {
-  private instance: AxiosInstance
+  private readonly instance: AxiosInstance
   constructor(baseURL: string) {
     this.instance = axios.create({
       baseURL,

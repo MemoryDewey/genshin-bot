@@ -2,17 +2,17 @@ import {
   MODULE_METADATA,
   ON_MATCH_ALL_METADATA,
   ON_PREFIX_METADATA,
+  ON_PRIVATE_PREFIX,
 } from 'framework/decorators/metadata'
 import { EventType, InjectMetadataValue } from 'framework/decorators/type'
 
-const EventConstructor = (key: EventType) => (
-  message: string,
-  isAt = true,
-): MethodDecorator => {
-  return (target, propertyKey, descriptor) => {
-    Reflect.defineMetadata(key, { message, isAt }, descriptor.value)
+const EventConstructor =
+  (key: EventType) =>
+  (message: string, isAt = true): MethodDecorator => {
+    return (target, propertyKey, descriptor) => {
+      Reflect.defineMetadata(key, { message, isAt }, descriptor.value)
+    }
   }
-}
 
 /**
  * 可执行的模块
@@ -62,3 +62,8 @@ export const OnMatchAll = EventConstructor(ON_MATCH_ALL_METADATA)
  * 前缀匹配
  */
 export const OnPrefix = EventConstructor(ON_PREFIX_METADATA)
+
+/**
+ * 私聊前缀匹配
+ */
+export const OnPrivatePrefix = EventConstructor(ON_PRIVATE_PREFIX)

@@ -35,3 +35,4 @@ lerna-debug.log*
 
 # db
 src/database/*.json
+src/database/wish/*.json
