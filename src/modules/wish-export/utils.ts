@@ -135,12 +135,16 @@ export async function generateGachaImg(
   ctx.font = '18px Hans'
   ctx.fillText('本命五星:', 12, 90)
   if (goldCardsMapArr.length) {
-    const g = goldCardsMapArr[0]
-    const gN = g[1].type == '角色' ? 'characters' : 'weapons'
-    const path = join(ROOT_PATH, `./src/assets/images/${gN}`, `./${g[0]}.png`)
-    const file = readFileSync(path)
-    const img = await loadImage(file)
-    ctx.drawImage(img, 12, 102, 80, 80)
+    try {
+      const g = goldCardsMapArr[0]
+      const gN = g[1].type == '角色' ? 'characters' : 'weapons'
+      const path = join(ROOT_PATH, `./src/assets/images/${gN}`, `./${g[0]}.png`)
+      const file = readFileSync(path)
+      const img = await loadImage(file)
+      ctx.drawImage(img, 12, 102, 80, 80)
+    } catch (e) {
+      console.log(e)
+    }
   }
   // center count
   ctx.fillText(`总抽卡数 : ${items.length}`, 150, 120)
