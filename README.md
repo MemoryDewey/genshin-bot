@@ -43,7 +43,7 @@
 **例：**
 
 
-[圣遗物评分](https://github.com/MemoryDewey/genshin-bot/blob/master/doc/rate.png)
+![圣遗物评分](https://github.com/MemoryDewey/genshin-bot/blob/master/doc/rate.png)
 
 
 > **注:**  @bot需手动at机器人账号；若设置了bot别名，也可使用bot别名 xxxx来替代 @bot
@@ -57,9 +57,9 @@
 
 **例：**
 <br>
-[导入抽卡链接](https://github.com/MemoryDewey/genshin-bot/blob/master/doc/add-href.png)
+![导入抽卡链接](https://github.com/MemoryDewey/genshin-bot/blob/master/doc/add-href.png)
 <br>
-[抽卡分析](https://github.com/MemoryDewey/genshin-bot/blob/master/doc/wish-anylasis.png)
+![抽卡分析](https://github.com/MemoryDewey/genshin-bot/blob/master/doc/wish-anylasis.png)
 
 
 > **注:**  抽卡的链接需要断网获取，详细获取抽卡链接的教程请参考微信公众号派蒙工具箱
