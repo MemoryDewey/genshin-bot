@@ -6,7 +6,7 @@
   "scripts": {
     "start": "nodemon --config nodemon.json",
     "prettier": "prettier --write .",
-    "test": "ts-node src/modules/rate/uitl.ts"
+    "test": "ts-node main.ts"
   },
   "keywords": [],
   "author": "",
