@@ -52,7 +52,7 @@
 <br>
 **例：**
 <br>
-![img.png](https://github.com/MemoryDewey/genshin-bot/blob/master/doc/add-href.png)
+![Image](https://github.com/MemoryDewey/genshin-bot/blob/master/doc/add-href.png)
 <br>
 ![img.png](doc/wish-anylasis.png)
 > **注:**  抽卡的链接需要断网获取，详细获取抽卡链接的教程请参考微信公众号派蒙工具箱
