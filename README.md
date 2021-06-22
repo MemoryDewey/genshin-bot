@@ -38,11 +38,14 @@
 @bot 圣遗物评分 圣遗物图片截图|圣遗物评分，上传的圣遗物图片可参考[可莉特调](https://genshin.pub)
 @bot 修改 主 xxx|修改圣遗物主词条属性
 @bot 修改 副x xxx|修改圣遗物副词条属性
-<br>
+
+
 **例：**
-<br>
+
+
 [圣遗物评分](https://github.com/MemoryDewey/genshin-bot/blob/master/doc/rate.png)
-<br>
+
+
 > **注:**  @bot需手动at机器人账号；若设置了bot别名，也可使用bot别名 xxxx来替代 @bot
 
 ### 抽卡分析
@@ -50,13 +53,15 @@
 :--|:--  
 导入抽卡链接 https://xxxxx/log|需要私聊机器人，添加抽卡链接
 抽卡分析 [武器/角色/新手/常驻]|分析抽卡的卡池
-<br>
+
+
 **例：**
 <br>
 [导入抽卡链接](https://github.com/MemoryDewey/genshin-bot/blob/master/doc/add-href.png)
 <br>
 [抽卡分析](https://github.com/MemoryDewey/genshin-bot/blob/master/doc/wish-anylasis.png)
-<br>
+
+
 > **注:**  抽卡的链接需要断网获取，详细获取抽卡链接的教程请参考微信公众号派蒙工具箱
 
 
