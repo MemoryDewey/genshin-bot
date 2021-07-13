@@ -3,10 +3,14 @@ import { Http, pause, writeFile } from 'src/utils'
 import { ListItem, WishRes } from 'src/interfaces/wish'
 import { join, resolve } from 'path'
 import { DATA_PATH, ROOT_PATH } from 'framework/config'
-import FileAsync from 'lowdb/adapters/FileAsync'
-import low from 'lowdb'
+import { Low, JSONFile } from 'lowdb'
 import { createCanvas, loadImage, registerFont } from 'canvas'
 import { readFileSync } from 'fs'
+
+type GachaDB = {
+  id: string
+  list: ListItem[]
+}
 
 export async function fetchGachaInfo(
   name: keyof typeof GachaInfo,
@@ -31,10 +35,12 @@ export async function fetchGachaInfo(
   }
 
   // 每个用户创建一个DB
-  const adapter = new FileAsync(resolve(ROOT_PATH, `./src/database/wish/${qq}.json`))
-  const userDb = await low(adapter)
+  const adapter = new JSONFile<GachaDB[]>(
+    resolve(ROOT_PATH, `./src/database/wish/${qq}.json`),
+  )
+  const userDb = new Low<GachaDB[]>(adapter)
 
-  const dbRes = (await userDb.get(name).value()) as ListItem[]
+  const dbRes = userDb.data.find(value => value.id === name).list
   // 已经在db中储存了数据
   const hadData = dbRes && dbRes.length > 0
 
@@ -87,7 +93,7 @@ export async function fetchGachaInfo(
   const fetchId = hadData ? dbRes[0].id : undefined
   const isExpire = !(await fetch(fetchId))
 
-  userDb.set(name, result).write()
+  userDb.data.push({ id: name, list: result })
   return { isExpire, result }
 }
 

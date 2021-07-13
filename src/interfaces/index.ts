@@ -1,2 +1,5 @@
 export * from './rate.interface'
 export * from './translate.interface'
+export * from './base'
+export * from './wish'
+export * from './lottery'

@@ -1,4 +1,5 @@
 import { MainPropertyTypes, Position, SubPropertyTypes } from 'src/types'
+import { BaseDb } from './base'
 
 export interface RateError {
   message: string
@@ -24,4 +25,8 @@ export interface OcrResponse {
   level: number
   main_item: MainItem
   sub_item: SubItem[]
+}
+
+export interface RateDB extends BaseDb {
+  response: OcrResponse
 }

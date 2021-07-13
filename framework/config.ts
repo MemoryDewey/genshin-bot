@@ -8,6 +8,7 @@ const configs = {
   port: Number.isNaN(Number(envParsed.PORT)) ? 8080 : Number(envParsed.PORT),
   authKey: envParsed.AUTH_KEY,
   qq: Number.isNaN(Number(envParsed.QQ)) ? 8080 : Number(envParsed.QQ),
+  admin: Number(envParsed.ADMIN),
 }
 
 const DATA_PATH = type().toLowerCase().includes('windows')

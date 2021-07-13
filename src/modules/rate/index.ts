@@ -1,7 +1,7 @@
 import { Inject, Module, OnMatchAll, OnPrefix } from 'framework/decorators'
 import { GroupMessage } from 'mirai-ts/dist/types/message-type'
 import { AxiosError } from 'axios'
-import { OcrResponse, RateError } from 'src/interfaces'
+import { OcrResponse, RateDB, RateError } from 'src/interfaces'
 import {
   checkImageExist,
   genAtPlainImageMsg,
@@ -9,6 +9,7 @@ import {
   getImageFromUrl,
   Http,
   Database,
+  logger,
 } from 'src/utils'
 import { Message } from 'mirai-ts'
 import { calcMainPropScore, calcSubPropScore, setRatedImage } from './uitl'
@@ -20,7 +21,7 @@ export class RateModule {
   private http: Http
 
   @Inject('rate')
-  private db: Database
+  private db: Database<RateDB>
 
   private readonly userUploadKey = 'artifacts'
 
@@ -41,7 +42,10 @@ export class RateModule {
     const mainScore = calcMainPropScore(ocr.main_item)
     const subScore = calcSubPropScore(ocr.sub_item)
     if (mainScore == -1 || subScore == -1) {
-      this.db.set(`${this.userUploadKey}:${id}`, ocr)
+      this.db.insert({
+        id: `${this.userUploadKey}:${id}`,
+        response: ocr,
+      })
       await bot.reply(
         genAtPlainMsg(bot.sender.id, [
           `${mainScore == -1 ? '主' : '副'}词条输入有误\n`,
@@ -94,11 +98,12 @@ export class RateModule {
       await this.rateArtifacts(bot, data)
     } catch (e) {
       const error = e as AxiosError
-      const data = error.response.data as RateError
+      logger.error(error.response)
+      const data = error.response?.data as RateError
       await bot.reply(
         genAtPlainImageMsg(
           senderId,
-          data.message,
+          data?.message,
           this.getImgPath('artifacts', 'uploadExample'),
         ),
       )
@@ -116,9 +121,10 @@ export class RateModule {
       await bot.reply(genAtPlainMsg(senderId, '参数错误'))
       return
     }
-    const rateValue = this.db
-      .get(`${this.userUploadKey}:${bot.sender.id}`)
-      .value() as OcrResponse
+    const rateValue = this.db.findBy(
+      'id',
+      `${this.userUploadKey}:${bot.sender.id}`,
+    )?.response
     for (let i = 0; i < extra.length; i += 2) {
       const key = extra[i]
       if (key == '主') {

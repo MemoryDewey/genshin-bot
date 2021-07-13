@@ -9,9 +9,10 @@ import {
   parseUrl,
   validateParamKey,
 } from 'src/utils'
-import { WishParam } from '../../types'
+import { WishParam } from 'src/types'
 import { GachaInfo, gachaNames, wishParamKey } from './constant'
 import { fetchGachaInfo, generateGachaImg } from './utils'
+import { WishDB } from 'src/interfaces'
 
 @Module()
 export class WishExportModule {
@@ -19,7 +20,7 @@ export class WishExportModule {
   private http: Http
 
   @Inject('wish')
-  private db: Database
+  private db: Database<WishDB>
 
   // 私聊 Bot 导入抽卡的链接
   @OnPrivatePrefix('导入抽卡链接')
@@ -35,7 +36,7 @@ export class WishExportModule {
       await bot.reply(errorMsg)
       return
     }
-    this.db.set(bot.sender.id.toString(), param)
+    this.db.insert({ id: bot.sender.id.toString(), param })
     await bot.reply('导入成功')
   }
 
@@ -48,7 +49,7 @@ export class WishExportModule {
     }
     const qq = bot.sender.id
     const name = extraMsg[0] as unknown as keyof typeof GachaInfo
-    const store = this.db.get(qq.toString()).value() as WishParam
+    const store = this.db.findBy('id', qq.toString())
     if (!store) {
       await bot.reply(genAtPlainMsg(qq, '先私聊我添加查询链接才能进行抽卡分析哦'))
       return

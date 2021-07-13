@@ -1,23 +1,21 @@
 import { Injectable } from 'framework/decorators'
-import low, { LowdbAsync } from 'lowdb'
-import FileAsync from 'lowdb/adapters/FileAsync'
+import { Low, JSONFile } from 'lowdb'
+import { join } from 'path'
 
 @Injectable()
-export class Database {
-  private db: LowdbAsync<any>
+export class Database<T> {
+  private db: Low<T[]>
 
   constructor(dbName = 'db') {
-    const adapter = new FileAsync(`./src/database/${dbName}.json`)
-    low(adapter).then(db => {
-      this.db = db
-    })
+    const adapter = new JSONFile<T[]>(join(__dirname, `./src/database/${dbName}.json`))
+    this.db = new Low<T[]>(adapter)
   }
 
-  public get(key: string) {
-    return this.db.get(key)
+  public findBy(key: keyof T, value: any) {
+    return this.db.data.find(value1 => value1[key] == value)
   }
 
-  public set(key: string, value: object) {
-    this.db.set(key, value).write()
+  public insert(value: T) {
+    this.db.data.push(value)
   }
 }
