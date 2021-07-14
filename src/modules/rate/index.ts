@@ -1,27 +1,34 @@
-import { Inject, Module, OnMatchAll, OnPrefix } from 'framework/decorators'
+import {
+  Inject,
+  InjectRepository,
+  Module,
+  OnMatchAll,
+  OnPrefix,
+} from 'framework/decorators'
 import { GroupMessage } from 'mirai-ts/dist/types/message-type'
 import { AxiosError } from 'axios'
-import { OcrResponse, RateDB, RateError } from 'src/interfaces'
+import { OcrResponse, RateError } from 'src/interfaces'
 import {
   checkImageExist,
   genAtPlainImageMsg,
   genAtPlainMsg,
   getImageFromUrl,
   Http,
-  Database,
-  logger,
 } from 'src/utils'
 import { Message } from 'mirai-ts'
 import { calcMainPropScore, calcSubPropScore, setRatedImage } from './uitl'
 import { ImageType } from 'src/types'
+import { logger } from 'framework/utils'
+import { Repository } from 'typeorm'
+import { Rate } from 'src/entities'
 
 @Module()
 export class RateModule {
   @Inject('https://api.genshin.pub/api')
   private http: Http
 
-  @Inject('rate')
-  private db: Database<RateDB>
+  @InjectRepository(Rate)
+  private repo: Repository<Rate>
 
   private readonly userUploadKey = 'artifacts'
 
@@ -42,10 +49,8 @@ export class RateModule {
     const mainScore = calcMainPropScore(ocr.main_item)
     const subScore = calcSubPropScore(ocr.sub_item)
     if (mainScore == -1 || subScore == -1) {
-      this.db.insert({
-        id: `${this.userUploadKey}:${id}`,
-        response: ocr,
-      })
+      const rate = new Rate(id, ocr)
+      await this.repo.save(rate)
       await bot.reply(
         genAtPlainMsg(bot.sender.id, [
           `${mainScore == -1 ? '主' : '副'}词条输入有误\n`,
@@ -98,15 +103,20 @@ export class RateModule {
       await this.rateArtifacts(bot, data)
     } catch (e) {
       const error = e as AxiosError
-      logger.error(error.response)
+      console.log(e)
+      logger.error(JSON.stringify(error.response))
       const data = error.response?.data as RateError
-      await bot.reply(
-        genAtPlainImageMsg(
-          senderId,
-          data?.message,
-          this.getImgPath('artifacts', 'uploadExample'),
-        ),
-      )
+      if (error.response?.data?.message) {
+        await bot.reply(
+          genAtPlainImageMsg(
+            senderId,
+            data.message,
+            this.getImgPath('artifacts', 'uploadExample'),
+          ),
+        )
+      } else {
+        await bot.reply(genAtPlainMsg(senderId, '嘤嘤嘤，不要啊，被玩坏了'))
+      }
     }
   }
 
@@ -121,10 +131,7 @@ export class RateModule {
       await bot.reply(genAtPlainMsg(senderId, '参数错误'))
       return
     }
-    const rateValue = this.db.findBy(
-      'id',
-      `${this.userUploadKey}:${bot.sender.id}`,
-    )?.response
+    const rateValue = (await this.repo.findOne(bot.sender.id)).data
     for (let i = 0; i < extra.length; i += 2) {
       const key = extra[i]
       if (key == '主') {

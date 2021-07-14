@@ -1,11 +1,12 @@
 import { GachaInfo } from './constant'
 import { Http, pause, writeFile } from 'src/utils'
 import { ListItem, WishRes } from 'src/interfaces/wish'
-import { join, resolve } from 'path'
+import { join } from 'path'
 import { DATA_PATH, ROOT_PATH } from 'framework/config'
-import { Low, JSONFile } from 'lowdb'
 import { createCanvas, loadImage, registerFont } from 'canvas'
 import { readFileSync } from 'fs'
+import { Repository } from 'typeorm'
+import { Wish } from 'src/entities'
 
 type GachaDB = {
   id: string
@@ -15,7 +16,7 @@ type GachaDB = {
 export async function fetchGachaInfo(
   name: keyof typeof GachaInfo,
   http: Http,
-  qq: number,
+  wish: Wish,
   params: Record<string, any>,
 ) {
   let gacha_type = 0
@@ -33,16 +34,8 @@ export async function fetchGachaInfo(
       gacha_type = GachaInfo.武器
       break
   }
-
-  // 每个用户创建一个DB
-  const adapter = new JSONFile<GachaDB[]>(
-    resolve(ROOT_PATH, `./src/database/wish/${qq}.json`),
-  )
-  const userDb = new Low<GachaDB[]>(adapter)
-
-  const dbRes = userDb.data.find(value => value.id === name).list
   // 已经在db中储存了数据
-  const hadData = dbRes && dbRes.length > 0
+  const hadData = wish && wish.data.length > 0
 
   params = {
     ...params,
@@ -50,7 +43,7 @@ export async function fetchGachaInfo(
     size: 20,
   }
 
-  let result: ListItem[] = hadData ? dbRes : []
+  let result: ListItem[] = hadData ? wish.data : []
 
   let page = 1
 
@@ -90,11 +83,11 @@ export async function fetchGachaInfo(
   }
 
   // 查询过使用最新的id往前查
-  const fetchId = hadData ? dbRes[0].id : undefined
+  const fetchId = hadData ? wish.data[0].id : undefined
   const isExpire = !(await fetch(fetchId))
 
-  userDb.data.push({ id: name, list: result })
-  return { isExpire, result }
+  wish.setData(result)
+  return { isExpire, result, wish }
 }
 
 export async function generateGachaImg(

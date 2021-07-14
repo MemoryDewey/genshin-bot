@@ -3,8 +3,10 @@ import {
   ON_MATCH_ALL_METADATA,
   ON_PREFIX_METADATA,
   ON_PRIVATE_PREFIX,
+  REPOSITORY_METADATA,
 } from 'framework/decorators/metadata'
 import { EventType, InjectMetadataValue } from 'framework/decorators/type'
+import { Type } from '../interfaces/type.interface'
 
 const EventConstructor =
   (key: EventType) =>
@@ -48,6 +50,17 @@ export const Inject = (...args: any[]): PropertyDecorator => {
         key: propertyKey,
         args,
       } as InjectMetadataValue,
+      target,
+    )
+  }
+}
+
+export const InjectRepository = <Entity>(entity: Type<Entity>): PropertyDecorator => {
+  return (target, propertyKey) => {
+    target[propertyKey] = null
+    return Reflect.defineMetadata(
+      `${REPOSITORY_METADATA}_${propertyKey.toString()}`,
+      entity,
       target,
     )
   }

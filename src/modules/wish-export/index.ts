@@ -1,8 +1,13 @@
-import { Inject, Module, OnPrefix, OnPrivatePrefix } from 'framework/decorators'
+import {
+  Inject,
+  InjectRepository,
+  Module,
+  OnPrefix,
+  OnPrivatePrefix,
+} from 'framework/decorators'
 import { GroupMessage, TempMessage } from 'mirai-ts/dist/types/message-type'
 import {
   checkImageExist,
-  Database,
   genAtPlainImageMsg,
   genAtPlainMsg,
   Http,
@@ -12,15 +17,20 @@ import {
 import { WishParam } from 'src/types'
 import { GachaInfo, gachaNames, wishParamKey } from './constant'
 import { fetchGachaInfo, generateGachaImg } from './utils'
-import { WishDB } from 'src/interfaces'
+import { Wish } from 'src/entities'
+import { Repository } from 'typeorm'
+import { User } from 'src/entities/user.entity'
 
 @Module()
 export class WishExportModule {
   @Inject(' https://hk4e-api.mihoyo.com')
   private http: Http
 
-  @Inject('wish')
-  private db: Database<WishDB>
+  @InjectRepository(Wish)
+  private wishRepo: Repository<Wish>
+
+  @InjectRepository(User)
+  private userRepo: Repository<User>
 
   // 私聊 Bot 导入抽卡的链接
   @OnPrivatePrefix('导入抽卡链接')
@@ -36,7 +46,8 @@ export class WishExportModule {
       await bot.reply(errorMsg)
       return
     }
-    this.db.insert({ id: bot.sender.id.toString(), param })
+    const user = new User(bot.sender.id, param)
+    await this.userRepo.save(user)
     await bot.reply('导入成功')
   }
 
@@ -49,13 +60,16 @@ export class WishExportModule {
     }
     const qq = bot.sender.id
     const name = extraMsg[0] as unknown as keyof typeof GachaInfo
-    const store = this.db.findBy('id', qq.toString())
-    if (!store) {
+    const user = await this.userRepo.findOne(qq)
+    if (!user) {
       await bot.reply(genAtPlainMsg(qq, '先私聊我添加查询链接才能进行抽卡分析哦'))
       return
     }
+    const wishes = await this.wishRepo.find({ id: qq })
+    const wish = wishes.find(value => value.name === name)
     await bot.reply(genAtPlainMsg(qq, '正在查询中，不要急哦'))
-    const info = await fetchGachaInfo(name, this.http, qq, store)
+    const info = await fetchGachaInfo(name, this.http, wish, user.wishParam)
+    await this.wishRepo.save(info.wish)
     await generateGachaImg(qq, name, info.result)
     await bot.reply(
       genAtPlainImageMsg(

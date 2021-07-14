@@ -4,9 +4,11 @@ import 'reflect-metadata'
 import {
   mapModuleInjection,
   mapModuleMethod,
+  mapRepository,
   methodEnable,
 } from 'framework/decorators/mapping'
 import { Type } from 'framework/interfaces/type.interface'
+import { connection } from './utils'
 
 /**
  * 加载模块
@@ -21,10 +23,15 @@ export async function loadModules(modules: Type[], callback?: () => void) {
     .map(T => {
       const t = new T()
       mapModuleInjection(t)
+      mapRepository(t)
       mapModuleMethod(t)
     })
   await mirai.link(configs.qq)
   if (callback) {
     mirai.before(callback)
   }
+}
+
+export async function connectDb() {
+  await connection
 }

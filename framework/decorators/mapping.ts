@@ -6,8 +6,10 @@ import {
   ON_MATCH_ALL_METADATA,
   ON_PREFIX_METADATA,
   ON_PRIVATE_PREFIX,
+  REPOSITORY_METADATA,
 } from './metadata'
 import { FriendMessage, TempMessage } from 'mirai-ts/dist/types/message-type'
+import { getRepository } from 'typeorm'
 
 /**
  * 完全匹配
@@ -68,7 +70,18 @@ export function methodEnable(T: Type) {
 export function mapModuleInjection(instance: object) {
   Object.keys(Object.getPrototypeOf(instance)).forEach(key => {
     const metadata = Reflect.getMetadata(key, instance) as InjectMetadataValue
-    instance[metadata.key] = new metadata.type(...metadata.args)
+    if (metadata && metadata.key) {
+      instance[key] = new metadata.type(...metadata.args)
+    }
+  })
+}
+
+export function mapRepository(instance: object) {
+  Object.keys(Object.getPrototypeOf(instance)).forEach(key => {
+    const metadata = Reflect.getMetadata(`${REPOSITORY_METADATA}_${key}`, instance)
+    if (metadata) {
+      instance[key] = getRepository(metadata)
+    }
   })
 }
 

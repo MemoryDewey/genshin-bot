@@ -26,7 +26,3 @@ export interface OcrResponse {
   main_item: MainItem
   sub_item: SubItem[]
 }
-
-export interface RateDB extends BaseDb {
-  response: OcrResponse
-}
