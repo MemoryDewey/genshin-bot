@@ -19,6 +19,8 @@
     "mirai-ts": "^1.1.1",
     "moment": "^2.29.1",
     "reflect-metadata": "^0.1.13",
+    "sqlite3": "^5.0.2",
+    "typeorm": "^0.2.34",
     "winston": "^3.3.3"
   },
   "devDependencies": {
