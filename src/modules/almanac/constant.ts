@@ -1,6 +1,5 @@
 import { readJsonFile } from 'src/utils'
 import path from 'path'
-import { BaseDb } from 'src/interfaces'
 
 export type Almanac = {
   buff: string[]
@@ -9,11 +8,6 @@ export type Almanac = {
 
 export type Almanacs = {
   [key: string]: Almanac
-}
-
-export interface AlmanacsStore {
-  timestamp: number
-  path: string
 }
 
 export type Lot = {

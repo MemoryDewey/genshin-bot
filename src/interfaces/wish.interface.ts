@@ -1,6 +1,3 @@
-import { BaseDb } from './base'
-import { WishParam } from 'src/types'
-
 export interface DataItem {
   total: string
   size: string
@@ -26,8 +23,4 @@ export interface WishRes {
   data: DataItem
   message: string
   retcode: number
-}
-
-export interface WishDB extends BaseDb {
-  param: WishParam
 }

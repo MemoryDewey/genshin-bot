@@ -1,5 +1,4 @@
 import { MainPropertyTypes, Position, SubPropertyTypes } from 'src/types'
-import { BaseDb } from './base'
 
 export interface RateError {
   message: string

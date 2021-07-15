@@ -1,17 +1,11 @@
 import { GachaInfo } from './constant'
 import { Http, pause, writeFile } from 'src/utils'
-import { ListItem, WishRes } from 'src/interfaces/wish'
+import { ListItem, WishRes } from 'src/interfaces/wish.interface'
 import { join } from 'path'
 import { DATA_PATH, ROOT_PATH } from 'framework/config'
 import { createCanvas, loadImage, registerFont } from 'canvas'
 import { readFileSync } from 'fs'
-import { Repository } from 'typeorm'
 import { Wish } from 'src/entities'
-
-type GachaDB = {
-  id: string
-  list: ListItem[]
-}
 
 export async function fetchGachaInfo(
   name: keyof typeof GachaInfo,
