@@ -3,6 +3,7 @@ import { genAtPlainMsg, random } from 'src/utils'
 import { GroupMessage } from 'mirai-ts/dist/types/message-type'
 import { Lottery } from 'src/entities'
 import { Repository } from 'typeorm'
+import { configs } from 'framework/config'
 
 @Module()
 export class LotteryModule {
@@ -10,7 +11,7 @@ export class LotteryModule {
   private repo: Repository<Lottery>
 
   protected async isAdmin(bot: GroupMessage) {
-    const permission = bot.sender.permission !== 'MEMBER'
+    const permission = bot.sender.id == configs.admin
     if (!permission) {
       await bot.reply('你没有权限进行该操作哦')
       return false
