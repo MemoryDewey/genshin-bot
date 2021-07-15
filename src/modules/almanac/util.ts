@@ -9,6 +9,8 @@ import {
   NodeCanvasRenderingContext2D,
   registerFont,
 } from 'canvas'
+import { random } from 'src/utils'
+import { logger } from 'framework/utils'
 
 function number2chinese(num: number) {
   if (num < 10) {
@@ -67,7 +69,7 @@ async function generateCanvas(
  * @param arr
  */
 function seedRandomList<T>(arr: T[]) {
-  const index = Math.floor(Math.random() * arr.length)
+  const index = random.integer({ min: 0, max: arr.length - 1 })
   return arr[index]
 }
 
@@ -178,7 +180,7 @@ export async function generateAlmanac() {
     await drawImage(todayLuckMap, getTodayTimestamp())
     return true
   } catch (e) {
-    console.log(e)
+    logger.error(e.toString())
     return false
   }
 }

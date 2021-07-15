@@ -6,6 +6,7 @@ import { DATA_PATH, ROOT_PATH } from 'framework/config'
 import { createCanvas, loadImage, registerFont } from 'canvas'
 import { readFileSync } from 'fs'
 import { Wish } from 'src/entities'
+import { logger } from 'framework/utils'
 
 export async function fetchGachaInfo(
   name: keyof typeof GachaInfo,
@@ -136,7 +137,7 @@ export async function generateGachaImg(
       const img = await loadImage(file)
       ctx.drawImage(img, 12, 102, 80, 80)
     } catch (e) {
-      console.log(e)
+      logger.error(e.toString())
     }
   }
   // center count

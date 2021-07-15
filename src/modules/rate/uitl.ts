@@ -14,6 +14,7 @@ import {
   SubPercentMaxProp,
   SubPercentWeightRate,
 } from './constant'
+import { logger } from 'framework/utils'
 
 /**
  * 设置圣遗物评分图片
@@ -100,7 +101,7 @@ export async function setRatedImage(
     )
     return true
   } catch (e) {
-    console.log(e)
+    logger.error(e.toString())
     return false
   }
 }
