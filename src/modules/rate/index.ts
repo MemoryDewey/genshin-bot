@@ -22,15 +22,13 @@ import { logger } from 'framework/utils'
 import { Repository } from 'typeorm'
 import { Rate } from 'src/entities'
 
-@Module()
+@Module(false)
 export class RateModule {
   @Inject('https://api.genshin.pub/api')
   private http: Http
 
   @InjectRepository(Rate)
   private repo: Repository<Rate>
-
-  private readonly userUploadKey = 'artifacts'
 
   protected ocrResToStr(data: OcrResponse): string[] {
     return [
@@ -73,11 +71,13 @@ export class RateModule {
           `副词条分数: ${subScore}`,
       ),
     )
+    return
   }
 
   @OnMatchAll('评分网站', false)
   private async getRateHref(bot: GroupMessage) {
     await bot.reply([Message.Plain('https://genshin.pub/relic')])
+    return
   }
 
   @OnMatchAll('圣遗物评分')
@@ -101,7 +101,9 @@ export class RateModule {
         await bot.reply(genAtPlainMsg(senderId, '请上传4个词条的圣遗物'))
       }
       await this.rateArtifacts(bot, data)
+      return
     } catch (e) {
+      console.log(e)
       logger.error(e.toString())
       const error = e as AxiosError
       const data = error.response?.data as RateError
@@ -116,6 +118,7 @@ export class RateModule {
       } else {
         await bot.reply(genAtPlainMsg(senderId, '嘤嘤嘤，不要啊，被玩坏了'))
       }
+      return
     }
   }
 
@@ -147,5 +150,6 @@ export class RateModule {
       }
     }
     await this.rateArtifacts(bot, rateValue)
+    return
   }
 }

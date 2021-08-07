@@ -2,7 +2,7 @@ import { Module, OnPrefix } from 'framework/decorators'
 import { GroupMessage } from 'mirai-ts/dist/types/message-type'
 import { qiuQiuPhraseTranslation, qiuQiuWordTranslation } from './util'
 
-@Module()
+@Module(false)
 export class QiuQiuTranslate {
   private readonly suffix =
     '\n※ 这个插件只能从丘丘语翻译为中文，不能反向翻译\n' +
