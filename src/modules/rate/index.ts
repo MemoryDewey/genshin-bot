@@ -22,7 +22,7 @@ import { logger } from 'framework/utils'
 import { Repository } from 'typeorm'
 import { Rate } from 'src/entities'
 
-@Module(false)
+@Module()
 export class RateModule {
   @Inject('https://api.genshin.pub/api')
   private http: Http
