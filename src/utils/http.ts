@@ -19,6 +19,9 @@ export class Http {
   }
 
   public post<T>(url: string, data: object) {
-    return this.instance.post<T>(url, data)
+    return this.instance.post<T>(url, data, {
+      timeout: 20000,
+      timeoutErrorMessage: '请求超时，请重试',
+    })
   }
 }
