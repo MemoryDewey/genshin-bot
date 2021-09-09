@@ -58,10 +58,11 @@ export class RateModule {
       return
     }
     const total = ((mainScore + subScore) * 100) / 100
-    if (await setRatedImage(ocr, { main: mainScore, sub: subScore, total }, id)) {
+    // TODO bot出问题先使用文字
+    /*if (await setRatedImage(ocr, { main: mainScore, sub: subScore, total }, id)) {
       await bot.reply(genAtPlainImageMsg(id, [], this.getImgPath('rate', id.toString())))
       return
-    }
+    }*/
     await bot.reply(
       genAtPlainMsg(
         id,
