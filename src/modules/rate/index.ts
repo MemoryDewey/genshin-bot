@@ -103,9 +103,12 @@ export class RateModule {
       await this.rateArtifacts(bot, data)
       return
     } catch (e) {
-      console.log(e)
-      logger.error(e.toString())
       const error = e as AxiosError
+      if (error.isAxiosError) {
+        logger.error(error.response)
+      } else {
+        logger.error(e.toString())
+      }
       const data = error.response?.data as RateError
       if (error.response?.data?.message) {
         await bot.reply(
