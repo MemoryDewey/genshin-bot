@@ -94,7 +94,7 @@ export async function genRatedImage(
     ctx.drawImage(dotImg, 35, 480, 16, 16)
     ctx.fillText(info.sub_item[3].name, 80, 500)
     ctx.fillText(info.sub_item[3].value, 470, 500)
-    return canvas.toDataURL('image/png')
+    return canvas.toDataURL('image/png').replace(/^data:image\/(png|jpg);base64,/, '')
   } catch (e) {
     logger.error(e.toString())
     return false
