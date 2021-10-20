@@ -5,7 +5,7 @@ import { generateAlmanac, generateLot, getTodayTimestamp } from './util'
 import { Almanac, Lots } from 'src/entities'
 import { Repository } from 'typeorm'
 
-@Module()
+@Module(false)
 export class AlmanacModule {
   @InjectRepository(Lots)
   private lotsRepo: Repository<Lots>

@@ -5,7 +5,7 @@ import { Lottery } from 'src/entities'
 import { Repository } from 'typeorm'
 import { configs } from 'framework/config'
 
-@Module()
+@Module(false)
 export class LotteryModule {
   @InjectRepository(Lottery)
   private repo: Repository<Lottery>

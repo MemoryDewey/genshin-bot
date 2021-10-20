@@ -21,7 +21,7 @@ import { Wish } from 'src/entities'
 import { Repository } from 'typeorm'
 import { User } from 'src/entities/user.entity'
 
-@Module()
+@Module(false)
 export class WishExportModule {
   @Inject(' https://hk4e-api.mihoyo.com')
   private http: Http
