@@ -11,15 +11,19 @@ export function genAtPlainMsg(id: number, msg: string | string[]) {
 export function genAtPlainImageMsg(
   id: number,
   msg: string | string[],
-  imagePath: string,
+  base64Img: string,
 ): MessageChain {
   if (Array.isArray(msg)) {
     return [
       Message.At(id),
-      Message.Image(null, null, imagePath),
+      Message.Image(null, null, null, base64Img),
       ...msg.map(m => Message.Plain(m)),
     ]
   } else {
-    return [Message.At(id), Message.Image(null, null, imagePath), Message.Plain(msg)]
+    return [
+      Message.At(id),
+      Message.Image(null, null, null, base64Img),
+      Message.Plain(msg),
+    ]
   }
 }

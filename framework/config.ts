@@ -15,5 +15,6 @@ const DATA_PATH = type().toLowerCase().includes('windows')
   ? join(envParsed.MIRAI_DATA_PATH_WIN)
   : join(envParsed.MIRAI_DATA_PATH_LINUX)
 const ROOT_PATH = join(__dirname, '../')
+const ARTIFACTS_PATH = './src/assets/images/artifacts'
 
-export { configs, DATA_PATH, ROOT_PATH }
+export { configs, DATA_PATH, ROOT_PATH, ARTIFACTS_PATH }

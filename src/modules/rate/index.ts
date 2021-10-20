@@ -16,7 +16,7 @@ import {
   Http,
 } from 'src/utils'
 import { Message } from 'mirai-ts'
-import { calcMainPropScore, calcSubPropScore, setRatedImage } from './uitl'
+import { calcMainPropScore, calcSubPropScore, genRatedImage } from './uitl'
 import { ImageType } from 'src/types'
 import { logger } from 'framework/utils'
 import { Repository } from 'typeorm'
@@ -58,20 +58,20 @@ export class RateModule {
       return
     }
     const total = ((mainScore + subScore) * 100) / 100
-    // TODO bot出问题先使用文字
-    /*if (await setRatedImage(ocr, { main: mainScore, sub: subScore, total }, id)) {
-      await bot.reply(genAtPlainImageMsg(id, [], this.getImgPath('rate', id.toString())))
-      return
-    }*/
-    await bot.reply(
-      genAtPlainMsg(
-        id,
-        '\n' +
-          `总分: ${total}\n` +
-          `主词条分数: ${mainScore}\n` +
-          `副词条分数: ${subScore}`,
-      ),
-    )
+    const img = await genRatedImage(ocr, { main: mainScore, sub: subScore, total })
+    if (!img) {
+      await bot.reply(
+        genAtPlainMsg(
+          id,
+          '\n' +
+            `总分: ${total}\n` +
+            `主词条分数: ${mainScore}\n` +
+            `副词条分数: ${subScore}`,
+        ),
+      )
+    } else {
+      await bot.reply(genAtPlainImageMsg(id, [], img))
+    }
     return
   }
 

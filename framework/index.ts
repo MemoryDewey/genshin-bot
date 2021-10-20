@@ -3,20 +3,20 @@ import { configs } from 'framework/config'
 import axios from 'axios'
 
 const miraiConfig: MiraiApiHttpSetting = {
-  adapters: ['ws', 'http'],
+  adapters: ['http'],
   enableVerify: true,
   verifyKey: configs.authKey,
   singleMode: false,
   cacheSize: 4096,
   adapterSettings: {
     http: {
-      host: 'localhost',
-      port: 8082,
+      host: configs.host,
+      port: configs.port,
       cors: ['*'],
     },
     ws: {
-      host: 'localhost',
-      port: 8080,
+      host: configs.host,
+      port: configs.port,
       reservedSyncId: '-1',
     },
   },

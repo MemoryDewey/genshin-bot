@@ -1,6 +1,6 @@
-import { writeFileSync } from 'fs'
+import { existsSync } from 'fs'
 import { join } from 'path'
-import { DATA_PATH, ROOT_PATH } from 'framework/config'
+import { ARTIFACTS_PATH, ROOT_PATH } from 'framework/config'
 import { createCanvas, loadImage, registerFont } from 'canvas'
 import { readFileSync } from 'fs'
 import { MainItem, OcrResponse, SubItem } from 'src/interfaces'
@@ -20,30 +20,29 @@ import { logger } from 'framework/utils'
  * 设置圣遗物评分图片
  * @param info
  * @param scores
- * @param id
  */
-export async function setRatedImage(
+export async function genRatedImage(
   info: OcrResponse,
   scores: {
     main: number
     sub: number
     total: number
   },
-  id: number | string,
 ) {
   try {
     const fontPath = join(ROOT_PATH, './src/assets/font/NotoSansSC-Regular.otf')
     registerFont(fontPath, { family: 'Sans' })
     const canvas = createCanvas(641, 530)
     const ctx = canvas.getContext('2d')
-    // 图片路径
-    const artifactsPath = './src/assets/images/artifacts'
     // 背景图片路径
-    const path = join(ROOT_PATH, artifactsPath, './background.png')
+    const path = join(ROOT_PATH, ARTIFACTS_PATH, './background.png')
     let file = readFileSync(path)
     const img = await loadImage(file)
     // 圣遗物图片路径
-    const artifact = join(ROOT_PATH, artifactsPath, `${info.name}.png`)
+    let artifact = join(ROOT_PATH, ARTIFACTS_PATH, `${info.name}.png`)
+    if (!existsSync(artifact)) {
+      artifact = join(ROOT_PATH, ARTIFACTS_PATH, `default.png`)
+    }
     file = readFileSync(artifact)
     const artifactImg = await loadImage(file)
     // 画背景
@@ -69,8 +68,8 @@ export async function setRatedImage(
     ctx.fillText(`${scores.total.toFixed(2)}`, 32, 255)
 
     // 圣遗物属性
-    const star = join(ROOT_PATH, artifactsPath, './star.png')
-    const dot = join(ROOT_PATH, artifactsPath, './dot.png')
+    const star = join(ROOT_PATH, ARTIFACTS_PATH, './star.png')
+    const dot = join(ROOT_PATH, ARTIFACTS_PATH, './dot.png')
     file = readFileSync(star)
     const starImg = await loadImage(file)
     const dotImg = await loadImage(dot)
@@ -95,11 +94,7 @@ export async function setRatedImage(
     ctx.drawImage(dotImg, 35, 480, 16, 16)
     ctx.fillText(info.sub_item[3].name, 80, 500)
     ctx.fillText(info.sub_item[3].value, 470, 500)
-    writeFileSync(
-      join(DATA_PATH, `/images/genshin/rate/${id}.png`),
-      canvas.toBuffer('image/png', { compressionLevel: 9 }),
-    )
-    return true
+    return canvas.toDataURL('image/png')
   } catch (e) {
     logger.error(e.toString())
     return false
