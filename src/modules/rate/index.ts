@@ -8,19 +8,15 @@ import {
 import { GroupMessage } from 'mirai-ts/dist/types/message-type'
 import { AxiosError } from 'axios'
 import { OcrResponse, RateError } from 'src/interfaces'
-import {
-  checkImageExist,
-  genAtPlainImageMsg,
-  genAtPlainMsg,
-  getImageFromUrl,
-  Http,
-} from 'src/utils'
+import { genAtPlainImageMsg, genAtPlainMsg, getImageFromUrl, Http } from 'src/utils'
 import { Message } from 'mirai-ts'
 import { calcMainPropScore, calcSubPropScore, genRatedImage } from './uitl'
-import { ImageType } from 'src/types'
 import { logger } from 'framework/utils'
 import { Repository } from 'typeorm'
 import { Rate } from 'src/entities'
+import { join } from 'path'
+import { ARTIFACTS_PATH, ROOT_PATH } from 'framework/config'
+import { readFileSync } from 'fs'
 
 @Module()
 export class RateModule {
@@ -36,10 +32,6 @@ export class RateModule {
       `${data.main_item.name} : ${data.main_item.value}\n`,
       ...data.sub_item.map(item => `${item.name} : ${item.value}\n`),
     ]
-  }
-
-  protected getImgPath(type: ImageType, name: string) {
-    return checkImageExist(type, name)
   }
 
   protected async rateArtifacts(bot: GroupMessage, ocr: OcrResponse) {
@@ -106,18 +98,17 @@ export class RateModule {
     } catch (e) {
       const error = e as AxiosError
       if (error.isAxiosError) {
-        logger.error(error.response)
+        logger.error(error.response.data)
       } else {
+        await bot.reply(genAtPlainMsg(senderId, '服务器错误'))
         logger.error(e.toString())
       }
       const data = error.response?.data as RateError
       if (error.response?.data?.message) {
+        const path = join(ROOT_PATH, ARTIFACTS_PATH, './uploadExample.png')
+        const file = readFileSync(path)
         await bot.reply(
-          genAtPlainImageMsg(
-            senderId,
-            data.message,
-            this.getImgPath('artifacts', 'uploadExample'),
-          ),
+          genAtPlainImageMsg(senderId, data.message, file.toString('base64')),
         )
       } else {
         await bot.reply(genAtPlainMsg(senderId, '嘤嘤嘤，不要啊，被玩坏了'))
