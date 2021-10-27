@@ -7,7 +7,6 @@ import {
 } from 'framework/decorators'
 import { GroupMessage, TempMessage } from 'mirai-ts/dist/types/message-type'
 import {
-  checkImageExist,
   genAtPlainImageMsg,
   genAtPlainMsg,
   Http,
@@ -21,7 +20,7 @@ import { Wish } from 'src/entities'
 import { Repository } from 'typeorm'
 import { User } from 'src/entities/user.entity'
 
-@Module(false)
+@Module()
 export class WishExportModule {
   @Inject(' https://hk4e-api.mihoyo.com')
   private http: Http
@@ -70,12 +69,12 @@ export class WishExportModule {
     await bot.reply(genAtPlainMsg(qq, '正在查询中，不要急哦'))
     const info = await fetchGachaInfo(name, this.http, wish, user.wishParam)
     await this.wishRepo.save(info.wish)
-    await generateGachaImg(qq, name, info.result)
+    const base64Img = await generateGachaImg(qq, name, info.result)
     await bot.reply(
       genAtPlainImageMsg(
         qq,
         info.isExpire ? '查询已经过期了哦，请重新私聊机器人查询链接' : '',
-        checkImageExist(`${qq}/wish`, name),
+        base64Img,
       ),
     )
   }

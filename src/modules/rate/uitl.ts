@@ -15,6 +15,7 @@ import {
   SubPercentWeightRate,
 } from './constant'
 import { logger } from 'framework/utils'
+import { canvas2Base64 } from 'src/utils'
 
 /**
  * 设置圣遗物评分图片
@@ -94,7 +95,7 @@ export async function genRatedImage(
     ctx.drawImage(dotImg, 35, 480, 16, 16)
     ctx.fillText(info.sub_item[3].name, 80, 500)
     ctx.fillText(info.sub_item[3].value, 470, 500)
-    return canvas.toDataURL('image/png').replace(/^data:image\/(png|jpg);base64,/, '')
+    return canvas2Base64(canvas)
   } catch (e) {
     logger.error(e.toString())
     return false

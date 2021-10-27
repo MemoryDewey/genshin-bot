@@ -3,6 +3,7 @@ import { existsSync } from 'fs'
 import { join } from 'path'
 import { DATA_PATH } from 'framework/config'
 import { ImageType } from '../types'
+import { Canvas } from 'canvas'
 
 export async function getImageFromUrl(
   url: string,
@@ -28,4 +29,8 @@ export function checkImageExist(type: ImageType, fileName: string, fileType = 'p
     return path
   }
   return `./genshin/${type}/default.png`
+}
+
+export function canvas2Base64(canvas: Canvas) {
+  return canvas.toDataURL('image/png').replace(/^data:image\/(png|jpg);base64,/, '')
 }

@@ -1,5 +1,5 @@
 import { GachaInfo } from './constant'
-import { Http, pause, writeFile } from 'src/utils'
+import { canvas2Base64, Http, pause, writeFile } from 'src/utils'
 import { ListItem, WishRes } from 'src/interfaces/wish.interface'
 import { join } from 'path'
 import { DATA_PATH, ROOT_PATH } from 'framework/config'
@@ -174,9 +174,5 @@ export async function generateGachaImg(
     width += wid
   })
 
-  writeFile(
-    join(DATA_PATH, `/images/genshin/${qq}/wish`),
-    `${name}.png`,
-    canvas.toBuffer('image/png', { compressionLevel: 9 }),
-  )
+  return canvas2Base64(canvas)
 }
