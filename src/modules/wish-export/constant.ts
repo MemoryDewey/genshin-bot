@@ -9,6 +9,7 @@ export const wishParamKey = [
   'device_type',
   'ext',
   'game_version',
+  'plat_type',
   'region',
   'authkey',
   'game_biz',

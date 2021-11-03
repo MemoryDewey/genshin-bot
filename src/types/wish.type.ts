@@ -9,6 +9,7 @@ export type WishParam = {
   device_type: string
   ext: string
   game_version: string
+  plat_type: string
   region: string
   authkey: string
   game_biz: string
