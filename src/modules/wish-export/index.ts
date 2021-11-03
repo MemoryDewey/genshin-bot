@@ -65,7 +65,10 @@ export class WishExportModule {
       return
     }
     const wishes = await this.wishRepo.find({ id: qq })
-    const wish = wishes.find(value => value.name === name)
+    let wish = wishes.find(value => value.name === name)
+    if (!wish) {
+      wish = new Wish(qq, name, [])
+    }
     await bot.reply(genAtPlainMsg(qq, '正在查询中，不要急哦'))
     const info = await fetchGachaInfo(name, this.http, wish, user.wishParam)
     await this.wishRepo.save(info.wish)
