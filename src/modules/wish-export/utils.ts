@@ -113,7 +113,7 @@ export async function generateGachaImg(
   const goldCardsMapArr = Array.from(goldMap).sort((a, b) => b[1].count - a[1].count)
 
   // 开始画图
-  const canvas = createCanvas(420, 210 + 24 * Math.ceil(goldCards.length / 5))
+  const canvas = createCanvas(420, 210 + 24 * Math.ceil(goldCards.length / 3))
   const fontPath = join(ROOT_PATH, './src/assets/font/Hans.ttf')
   registerFont(fontPath, { family: 'Hans' })
   const ctx = canvas.getContext('2d')
