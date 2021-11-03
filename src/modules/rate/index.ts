@@ -61,8 +61,10 @@ export class RateModule {
             `副词条分数: ${subScore}`,
         ),
       )
+      await this.repo.delete({ id: bot.sender.id })
     } else {
       await bot.reply(genAtPlainImageMsg(id, [], img))
+      await this.repo.delete({ id: bot.sender.id })
     }
     return
   }
@@ -119,32 +121,33 @@ export class RateModule {
 
   @OnPrefix('修改', false)
   private async changeArtifacts(bot: GroupMessage, extra: string[]) {
-    const quote = bot.get('Quote')
     const senderId = bot.sender.id
-    if (!quote) {
-      return
-    }
     if (extra.length % 2 != 0) {
       await bot.reply(genAtPlainMsg(senderId, '参数错误'))
       return
     }
-    const rateValue = (await this.repo.findOne(bot.sender.id)).data
-    for (let i = 0; i < extra.length; i += 2) {
-      const key = extra[i]
-      if (key == '主') {
-        rateValue.main_item.value = extra[i + 1]
-      } else if (key.includes('副')) {
-        const index = key.charAt(key.length - 1)
-        const subIndex = parseInt(index)
-        if (subIndex <= 4 && subIndex >= 1) {
-          rateValue.sub_item[subIndex - 1].value = extra[i + 1]
-        } else {
-          await bot.reply(genAtPlainMsg(senderId, '参数错误'))
-          return
+    const rateValue = (await this.repo.findOne(bot.sender.id))?.data
+    if (rateValue) {
+      for (let i = 0; i < extra.length; i += 2) {
+        const key = extra[i]
+        if (key == '主') {
+          rateValue.main_item.value = extra[i + 1]
+        } else if (key.includes('副')) {
+          const index = key.charAt(key.length - 1)
+          const subIndex = parseInt(index)
+          if (subIndex <= 4 && subIndex >= 1) {
+            rateValue.sub_item[subIndex - 1].value = extra[i + 1]
+          } else {
+            await bot.reply(genAtPlainMsg(senderId, '参数错误'))
+            return
+          }
         }
       }
+      await this.rateArtifacts(bot, rateValue)
+    } else {
+      await bot.reply(genAtPlainMsg(senderId, '不是你评分的圣遗物哦'))
     }
-    await this.rateArtifacts(bot, rateValue)
+
     return
   }
 }
