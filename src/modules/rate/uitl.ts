@@ -198,7 +198,7 @@ export function calcSubPropScore(props: SubItem[]): number {
           total += weight * 2.141414
           break
         case 'atk':
-          total += weight * 1.6060606
+          total += weight * 1.923077
           break
         case 'df':
         case 'hp':
