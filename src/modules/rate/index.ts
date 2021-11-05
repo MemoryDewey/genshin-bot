@@ -9,7 +9,6 @@ import { GroupMessage } from 'mirai-ts/dist/types/message-type'
 import { AxiosError } from 'axios'
 import { OcrResponse, RateError } from 'src/interfaces'
 import { genAtPlainImageMsg, genAtPlainMsg, getImageFromUrl, Http } from 'src/utils'
-import { Message } from 'mirai-ts'
 import { calcMainPropScore, calcSubPropScore, genRatedImage } from './uitl'
 import { logger } from 'framework/utils'
 import { Repository } from 'typeorm'
@@ -69,12 +68,6 @@ export class RateModule {
     return
   }
 
-  @OnMatchAll('评分网站', false)
-  private async getRateHref(bot: GroupMessage) {
-    await bot.reply([Message.Plain('https://genshin.pub/relic')])
-    return
-  }
-
   @OnMatchAll('圣遗物评分')
   private async uploadArtifacts(bot: GroupMessage) {
     const senderId = bot.sender.id
@@ -106,15 +99,10 @@ export class RateModule {
         logger.error(e.toString())
       }
       const data = error.response?.data as RateError
-      if (error.response?.data?.message) {
-        const path = join(ROOT_PATH, ARTIFACTS_PATH, './uploadExample.png')
-        const file = readFileSync(path)
-        await bot.reply(
-          genAtPlainImageMsg(senderId, data.message, file.toString('base64')),
-        )
-      } else {
-        await bot.reply(genAtPlainMsg(senderId, '嘤嘤嘤，不要啊，被玩坏了'))
-      }
+      const path = join(ROOT_PATH, ARTIFACTS_PATH, './uploadExample.png')
+      const file = readFileSync(path)
+      const msg = data?.message ?? '上传图片错误'
+      await bot.reply(genAtPlainImageMsg(senderId, msg, file.toString('base64')))
       return
     }
   }
