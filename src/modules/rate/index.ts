@@ -35,8 +35,12 @@ export class RateModule {
 
   protected async rateArtifacts(bot: GroupMessage, ocr: OcrResponse) {
     const id = bot.sender.id
-    const mainScore = calcMainPropScore(ocr.main_item)
-    const subScore = calcSubPropScore(ocr.sub_item)
+    if (ocr.level != 20) {
+      await bot.reply(genAtPlainMsg(id, '请上传精炼20级的圣遗物'))
+      return
+    }
+    const mainScore = calcMainPropScore(ocr.main_item, ocr.pos)
+    const subScore = calcSubPropScore(ocr.sub_item, ocr.main_item.type, ocr.pos)
     if (mainScore == -1 || subScore == -1) {
       const rate = new Rate(id, ocr)
       await this.repo.save(rate)
@@ -61,10 +65,10 @@ export class RateModule {
         ),
       )
       await this.repo.delete({ id: bot.sender.id })
-    } else {
-      await bot.reply(genAtPlainImageMsg(id, [], img))
-      await this.repo.delete({ id: bot.sender.id })
+      return
     }
+    await bot.reply(genAtPlainImageMsg(id, [], img))
+    await this.repo.delete({ id: bot.sender.id })
     return
   }
 

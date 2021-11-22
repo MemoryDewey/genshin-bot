@@ -5,17 +5,16 @@ import { createCanvas, loadImage, registerFont } from 'canvas'
 import { readFileSync } from 'fs'
 import { MainItem, OcrResponse, SubItem } from 'src/interfaces'
 import {
-  MainNumberMaxProp,
-  MainNumberWeightRate,
-  MainPercentMaxProp,
-  MainPercentWeightRate,
+  SubAtkRate,
+  SubCriRate,
   SubNumberMaxProp,
-  SubNumberWeightRate,
+  SubNumberRate,
   SubPercentMaxProp,
-  SubPercentWeightRate,
+  SubPercentRate,
 } from './constant'
 import { logger } from 'framework/utils'
 import { canvas2Base64 } from 'src/utils'
+import { MainPropertyTypes, Position, SubPropertyTypes } from 'src/types'
 
 /**
  * 设置圣遗物评分图片
@@ -103,112 +102,153 @@ export async function genRatedImage(
 }
 
 /**
- * 计算圣遗物主词条权重
- * @param prop 圣遗物主词条
- */
-function calcMainPropWeight(prop: MainItem): number {
-  const isPercent = prop.value.includes('%')
-  const value = parseFloat(prop.value)
-  if (isPercent) {
-    if (value > MainPercentMaxProp[prop.type]) {
-      return -1
-    }
-    return Math.floor((value * 100) / MainPercentWeightRate[prop.type]) / 100
-  }
-  if (value > MainNumberMaxProp[prop.type]) {
-    return -1
-  }
-  return Math.floor((value * 100) / MainNumberWeightRate[prop.type]) / 100
-}
-
-/**
- * 计算圣遗物副词条权重
+ * 是否为合法的副词条
  * @param prop 副词条
  */
-function calcSubPropWeight(prop: SubItem): number {
+function isLegalSubItem(prop: SubItem): boolean {
   const isPercent = prop.value.includes('%')
   const value = parseFloat(prop.value)
   if (isPercent) {
-    if (value > SubPercentMaxProp[prop.type]) {
-      return -1
-    }
-    return Math.floor((value * 100) / SubPercentWeightRate[prop.type]) / 100
+    return value <= SubPercentMaxProp[prop.type]
   }
-  if (value > SubNumberMaxProp[prop.type]) {
-    return -1
-  }
-  return Math.floor((value * 100) / SubNumberWeightRate[prop.type]) / 100
+  return value <= SubNumberMaxProp[prop.type]
 }
 
 /**
  * 获取圣遗物主词条分数
  * @param prop
+ * @param pos
  */
-export function calcMainPropScore(prop: MainItem): number {
-  const isPercent = prop.value.includes('%')
-  const weight = calcMainPropWeight(prop)
-  if (weight < 0 || isNaN(weight)) {
-    return -1
-  }
+export function calcMainPropScore(prop: MainItem, pos: Position): number {
   let value = 0
-  if (!isPercent && prop.type != 'em') {
-    value = weight * 0.7
-  } else {
-    switch (prop.type) {
-      case 'atk':
-      case 'cr':
-      case 'cd':
-      case 'phys':
-      case 'pyro':
-      case 'hydro':
-      case 'elec':
-      case 'geo':
-      case 'anemo':
-      case 'cryo':
-        value = weight
-        break
-      case 'df':
-      case 'em':
-      case 'hp':
-        value = weight * 0.9
-        break
-      case 'heal':
-      case 'er':
-        value = weight * 0.8
-        break
-    }
+  switch (pos) {
+    case '理之冠':
+      switch (prop.type) {
+        case 'cr':
+        case 'cd':
+          value = 10
+          break
+        case 'atk':
+          value = 8
+          break
+        default:
+          value = 2
+      }
+      break
+    case '空之杯':
+      switch (prop.type) {
+        case 'phys':
+        case 'pyro':
+        case 'hydro':
+        case 'elec':
+        case 'geo':
+        case 'anemo':
+        case 'cryo':
+          value = 10
+          break
+        case 'atk':
+          value = 5
+          break
+        default:
+          value = 2
+      }
+      break
+    case '时之沙':
+      switch (prop.type) {
+        case 'atk':
+          value = 10
+          break
+        default:
+          value = 2
+      }
+      break
+    case '死之羽':
+    case '生之花':
+      value = 6
   }
-  return Math.ceil(value * 100) / 100
+  return value
 }
 
-export function calcSubPropScore(props: SubItem[]): number {
+function getDefaultSubScore(
+  value: number,
+  isPercent: boolean,
+  type: keyof typeof SubPropertyTypes,
+) {
+  return isPercent ? value / SubPercentRate[type] : value / SubNumberRate[type]
+}
+
+function getAtkSubScore(
+  value: number,
+  isPercent: boolean,
+  type: keyof typeof SubPropertyTypes,
+) {
+  if (['er', 'em'].includes(type)) {
+    return value / SubAtkRate[type]
+  }
+  return getDefaultSubScore(value, isPercent, type)
+}
+
+export function calcSubPropScore(
+  props: SubItem[],
+  mainType: keyof typeof MainPropertyTypes,
+  pos: Position,
+): number {
   let total = 0
   for (const prop of props) {
-    const weight = calcSubPropWeight(prop)
-    if (weight < 0 || isNaN(weight)) {
+    if (!isLegalSubItem(prop)) {
       return -1
     }
     const isPercent = prop.value.includes('%')
-    if (!isPercent && prop.type != 'em') {
-      total += weight * 0.642424
-    } else {
-      switch (prop.type) {
-        case 'cd':
-        case 'cr':
-          total += weight * 2.141414
-          break
-        case 'atk':
-          total += weight * 1.923077
-          break
-        case 'df':
-        case 'hp':
-          total += weight * 1.070707
-          break
-        case 'em':
-        case 'er':
-          total += weight * 0.856565
-          break
-      }
+    const value = parseFloat(prop.value)
+    switch (pos) {
+      case '理之冠':
+        switch (mainType) {
+          case 'cr':
+          case 'cd':
+            if (['cd', 'cr'].includes(prop.type)) {
+              total += value / SubCriRate[prop.type]
+              break
+            }
+            total += getDefaultSubScore(value, isPercent, prop.type)
+            break
+          case 'atk':
+            total += getAtkSubScore(value, isPercent, prop.type)
+            break
+          default:
+            total += getDefaultSubScore(value, isPercent, prop.type)
+        }
+        break
+      case '空之杯':
+        switch (mainType) {
+          case 'phys':
+          case 'pyro':
+          case 'hydro':
+          case 'elec':
+          case 'geo':
+          case 'anemo':
+          case 'cryo':
+            console.log(prop.type, getDefaultSubScore(value, isPercent, prop.type))
+            total += getDefaultSubScore(value, isPercent, prop.type)
+            break
+          case 'atk':
+            total += getAtkSubScore(value, isPercent, prop.type)
+            break
+          default:
+            total += getDefaultSubScore(value, isPercent, prop.type)
+        }
+        break
+      case '时之沙':
+        switch (mainType) {
+          case 'atk':
+            total += getAtkSubScore(value, isPercent, prop.type)
+            break
+          default:
+            total += getDefaultSubScore(value, isPercent, prop.type)
+        }
+        break
+      case '死之羽':
+      case '生之花':
+        total += getDefaultSubScore(value, isPercent, prop.type)
     }
   }
   return Math.ceil(total * 100) / 100

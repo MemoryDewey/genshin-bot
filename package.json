@@ -6,7 +6,7 @@
   "scripts": {
     "start": "nodemon --config nodemon.json",
     "prettier": "prettier --write .",
-    "test": "ts-node test"
+    "test": "ts-node -r tsconfig-paths/register test"
   },
   "keywords": [],
   "author": "",
