@@ -35,10 +35,10 @@ export class RateModule {
 
   protected async rateArtifacts(bot: GroupMessage, ocr: OcrResponse) {
     const id = bot.sender.id
-    if (ocr.level != 20) {
+    /*if (ocr.level != 20) {
       await bot.reply(genAtPlainMsg(id, '请上传精炼20级的圣遗物'))
       return
-    }
+    }*/
     const mainScore = calcMainPropScore(ocr.main_item, ocr.pos)
     const subScore = calcSubPropScore(ocr.sub_item, ocr.main_item.type, ocr.pos)
     if (mainScore == -1 || subScore == -1) {
