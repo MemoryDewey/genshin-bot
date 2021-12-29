@@ -1,6 +1,6 @@
 import WebSocket from 'ws'
 import { EventEmitter } from 'events'
-import { EventCallback, EventMessage, SenderInfo } from './connect'
+import { EventCallback, EventMessage, GroupMessageCallBack, SenderInfo } from './connect'
 import { JsonString2Object } from '../utils/json'
 import { logger } from '../utils'
 
@@ -73,14 +73,16 @@ class OneBot {
       }
     })
   }
-  /*public onPrefix(prefix: string | RegExp, callback: EventCallback) {
+  public onGroupMessage(callback: GroupMessageCallBack) {
     this.onMessage(message => {
-      if(typeof prefix == 'string' && ){
-
+      if (message.message_type == 'group') {
+        const sendInfo = callback()
+        console.log(sendInfo)
+        //this.apiSocket.send()
       }
     })
   }
-  public onFullMatch(word: string, callback: EventCallback) {
+  /*public onFullMatch(word: string, callback: EventCallback) {
     callback()
   }*/
 }

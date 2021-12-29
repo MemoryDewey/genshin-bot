@@ -1,6 +1,8 @@
 export type PostType = 'message' | 'notice' | 'request' | 'meta_event'
 export type MessageType = 'group' | 'private'
 export type EventCallback = (message: EventMessage) => void
+// 需要注入一个bot实例 (bot:Bot) => SendMessage
+export type GroupMessageCallBack = () => SendMessage
 
 export interface SenderInfo {
   area: string
@@ -29,4 +31,8 @@ export interface EventMessage {
   time: number
   message_seq: number
   font: number
+}
+
+export interface SendMessage {
+  qq: number
 }
