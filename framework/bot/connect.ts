@@ -2,7 +2,7 @@ export type PostType = 'message' | 'notice' | 'request' | 'meta_event'
 export type MessageType = 'group' | 'private'
 export type EventCallback = (message: EventMessage) => void
 // 需要注入一个bot实例 (bot:Bot) => SendMessage
-export type GroupMessageCallBack = () => SendMessage
+export type ReplyCallback<T> = (bot: T) => SendMessage
 
 export interface SenderInfo {
   area: string

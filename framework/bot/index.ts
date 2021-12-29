@@ -1,15 +1,17 @@
 import WebSocket from 'ws'
-import { EventEmitter } from 'events'
-import { EventCallback, EventMessage, GroupMessageCallBack, SenderInfo } from './connect'
+import { EventCallback, EventMessage, ReplyCallback, SenderInfo } from './connect'
 import { JsonString2Object } from '../utils/json'
 import { logger } from '../utils'
 
 class Bot {
-  private readonly event!: EventEmitter
-  public sender!: SenderInfo
+  public sender: SenderInfo
+  public isAt: boolean
+  public isAdmin: boolean
+  public message: string
+  //public image?: File
 
-  constructor() {
-    this.event = new EventEmitter()
+  constructor(message: EventMessage) {
+    this.sender = message.sender
   }
 }
 
@@ -50,7 +52,6 @@ class OneBot {
     this.apiSocket.onopen = () => {
       console.log('ApiSocket已关闭')
     }
-    this.bot = new Bot()
   }
 
   private static print(message: EventMessage) {
@@ -73,11 +74,12 @@ class OneBot {
       }
     })
   }
-  public onGroupMessage(callback: GroupMessageCallBack) {
+  public onGroupMessage(callback: ReplyCallback<Bot>) {
     this.onMessage(message => {
       if (message.message_type == 'group') {
-        const sendInfo = callback()
-        console.log(sendInfo)
+        const bot = new Bot(message)
+        const replyInfo = callback(bot)
+        console.log(replyInfo)
         //this.apiSocket.send()
       }
     })
