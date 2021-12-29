@@ -1,8 +1,5 @@
-import bunyan from 'bunyan'
+import { getLogger } from 'log4js'
 
-const logger = bunyan.createLogger({
-  name: 'Logger',
-  streams: [{ type: 'rotating-file', path: 'logs/error.log', period: '7d', count: 7 }],
-})
+const logger = getLogger()
 
 export { logger }
