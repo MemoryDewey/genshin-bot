@@ -1,7 +1,10 @@
-import WebSocket from 'ws'
+import { OneBot } from '../framework/bot'
 
-const socket = new WebSocket('ws://1.14.246.248:6700/event')
+const app = new OneBot({ host: '1.14.246.248', port: 6700 })
 
-socket.on('message', data => {
-  console.log(data.toString())
+app.start()
+app.onGroupMessage(bot => {
+  console.log(bot.text)
+  console.log(bot.imageUrls)
+  return { qq: 12345 }
 })
