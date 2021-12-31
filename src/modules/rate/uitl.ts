@@ -227,7 +227,6 @@ export function calcSubPropScore(
           case 'geo':
           case 'anemo':
           case 'cryo':
-            console.log(prop.type, getDefaultSubScore(value, isPercent, prop.type))
             total += getDefaultSubScore(value, isPercent, prop.type)
             break
           case 'atk':

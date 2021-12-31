@@ -12,6 +12,7 @@ import {
 } from './metadata'
 import { getRepository } from 'typeorm'
 import { Bot } from 'framework/bot'
+import { logger } from '../utils'
 
 /**
  * 处理消息
@@ -143,5 +144,5 @@ export function mapModuleMethod(instance: object) {
       }
     })
   })
-  console.log(`Load ${name} success`)
+  logger.info(`Load ${name} success`)
 }
