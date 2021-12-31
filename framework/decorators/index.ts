@@ -1,18 +1,27 @@
 import {
   MODULE_METADATA,
+  ON_KEYWORD_METADATA,
   ON_MATCH_ALL_METADATA,
   ON_PREFIX_METADATA,
-  ON_PRIVATE_PREFIX,
+  ON_SUFFIX_METADATA,
   REPOSITORY_METADATA,
 } from 'framework/decorators/metadata'
-import { EventType, InjectMetadataValue } from 'framework/decorators/type'
+import { EventType, InjectMetadataValue, MsgFuncConfig } from 'framework/decorators/type'
 import { Type } from '../interfaces/type.interface'
 
 const EventConstructor =
-  (key: EventType) =>
-  (message: string, isAt = true): MethodDecorator => {
+  <T>(key: EventType) =>
+  (match: T, config?: Pick<MsgFuncConfig<T>, 'type' | 'at'>): MethodDecorator => {
     return (target, propertyKey, descriptor) => {
-      Reflect.defineMetadata(key, { message, isAt }, descriptor.value)
+      Reflect.defineMetadata(
+        key,
+        {
+          match,
+          type: config?.type ?? 'group',
+          at: config?.at ?? false,
+        },
+        descriptor.value,
+      )
     }
   }
 
@@ -66,17 +75,11 @@ export const InjectRepository = <Entity>(entity: Type<Entity>): PropertyDecorato
   }
 }
 
-/**
- * 完全匹配
- */
+// 完全匹配
 export const OnMatchAll = EventConstructor(ON_MATCH_ALL_METADATA)
-
-/**
- * 前缀匹配
- */
+// 前缀匹配
 export const OnPrefix = EventConstructor(ON_PREFIX_METADATA)
-
-/**
- * 私聊前缀匹配
- */
-export const OnPrivatePrefix = EventConstructor(ON_PRIVATE_PREFIX)
+// 后缀匹配
+export const OnSuffix = EventConstructor(ON_SUFFIX_METADATA)
+// 关键词匹配
+export const OnKeyword = EventConstructor(ON_KEYWORD_METADATA)

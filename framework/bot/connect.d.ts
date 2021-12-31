@@ -2,8 +2,15 @@ export type PostType = 'message' | 'notice' | 'request' | 'meta_event'
 export type MessageType = 'group' | 'private'
 export type EventMessage = PrivateEventMessage | GroupEventMessage
 export type EventCallback = (message: EventMessage) => void
-// 需要注入一个bot实例 (bot:Bot) => SendMessage
-export type ReplyCallback<T> = (bot: T) => SendMessage
+export type ReplyMessageMap = {
+  text: { text: string }
+  image: { file: string }
+  at: { qq: string }
+  reply: { id: string }
+}
+export type ReplayMessageType = 'text' | 'image' | 'at' | 'reply'
+export type ReplyContent = ReplyMessage[] | void
+export type ReplyCallback<T> = (bot: T) => ReplyContent | Promise<ReplyContent>
 
 export interface PrivateEventMessage {
   font: number
@@ -41,6 +48,15 @@ export interface GroupEventMessage extends PrivateEventMessage {
   sender: GroupSenderInfo
 }
 
-export interface SendMessage {
-  qq: number
+export interface ReplyMessage {
+  type: ReplayMessageType
+  data: ReplyMessageMap[ReplayMessageType]
+}
+
+export interface ApiMessage {
+  data: null | { message_id: number }
+  retcode: number
+  status: 'ok' | 'failed'
+  msg?: string
+  wording?: string
 }

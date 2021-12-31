@@ -1,8 +1,8 @@
 import { Type } from '../interfaces/type.interface'
 
-export type EventType = 'keyword' | 'matchAll' | 'prefix' | 'privatePrefix'
+export type EventType = 'keyword' | 'matchAll' | 'prefix' | 'suffix' | 'regex'
 
-export const EventMap = ['keyword', 'matchAll', 'prefix', 'privatePrefix']
+export const EventMap = ['keyword', 'matchAll', 'prefix', 'suffix', 'regex']
 
 export type InjectMetadataValue = {
   type: Type
@@ -10,9 +10,14 @@ export type InjectMetadataValue = {
   args: any[]
 }
 
-export type MsgFunc = (
+export type MsgFuncConfig<T> = {
+  match: T
+  type?: 'group' | 'private'
+  at?: boolean
+}
+
+export type MsgFunc<T> = (
   instance: object,
-  item: string,
-  msg: string,
-  isAt?: boolean,
+  funcName: string,
+  config: MsgFuncConfig<T>,
 ) => void

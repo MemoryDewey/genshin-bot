@@ -1,29 +1,21 @@
-import { Message } from 'mirai-ts'
-import { MessageChain } from 'mirai-ts/dist/types/message-type'
+import { ReplyContent } from 'framework/bot/connect'
+import { Message } from 'framework/bot'
 
-export function genAtPlainMsg(id: number, msg: string | string[]) {
+export function genAtPlainMsg(qq: number, msg: string | string[]): ReplyContent {
   if (Array.isArray(msg)) {
-    return [Message.At(id), ...msg.map(m => Message.Plain(m))]
+    return [Message.At(qq), ...msg.map(m => Message.Text(m))]
   }
-  return [Message.At(id), Message.Plain(msg)]
+  return [Message.At(qq), Message.Text(msg)]
 }
 
 export function genAtPlainImageMsg(
   id: number,
   msg: string | string[],
   base64Img: string,
-): MessageChain {
+): ReplyContent {
   if (Array.isArray(msg)) {
-    return [
-      Message.At(id),
-      Message.Image(null, null, null, base64Img),
-      ...msg.map(m => Message.Plain(m)),
-    ]
+    return [Message.At(id), Message.Image(base64Img), ...msg.map(m => Message.Text(m))]
   } else {
-    return [
-      Message.At(id),
-      Message.Image(null, null, null, base64Img),
-      Message.Plain(msg),
-    ]
+    return [Message.At(id), Message.Image(base64Img), Message.Text(msg)]
   }
 }

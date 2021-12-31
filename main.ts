@@ -1,18 +1,20 @@
 import { connectDb, loadModules } from 'framework/bootstrap'
-import { mirai } from 'framework'
+import { app } from 'framework'
 import * as Module from 'src/modules'
 import { dictToArray, logger } from 'framework/utils'
 
-async function app() {
+async function start() {
   try {
     await connectDb()
+    app.start()
     await loadModules(dictToArray(Module))
-    mirai.listen()
   } catch (e) {
-    console.log(e)
-    logger.error(e.toString())
+    logger.error(e)
+    setInterval(async () => {
+      await start()
+    }, 3000)
   }
 }
 ;(async () => {
-  await app()
+  await start()
 })()

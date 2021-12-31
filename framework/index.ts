@@ -1,27 +1,12 @@
-import Mirai, { MiraiApiHttpSetting } from 'mirai-ts'
 import { configs } from 'framework/config'
 import axios from 'axios'
+import { BotConfig, OneBot } from 'framework/bot'
 
-const miraiConfig: MiraiApiHttpSetting = {
-  adapters: ['http'],
-  enableVerify: true,
-  verifyKey: configs.authKey,
-  singleMode: false,
-  cacheSize: 4096,
-  adapterSettings: {
-    http: {
-      host: configs.host,
-      port: configs.port,
-      cors: ['*'],
-    },
-    ws: {
-      host: configs.host,
-      port: configs.port,
-      reservedSyncId: '-1',
-    },
-  },
+const oneBotConfig: BotConfig = {
+  host: configs.host,
+  port: configs.port,
+  protocol: configs.protocol,
 }
+const app = new OneBot(oneBotConfig)
 
-const mirai = new Mirai(miraiConfig)
-
-export { mirai, axios }
+export { app, axios }

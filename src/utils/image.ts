@@ -1,8 +1,4 @@
 import axios from 'axios'
-import { existsSync } from 'fs'
-import { join } from 'path'
-import { DATA_PATH } from 'framework/config'
-import { ImageType } from '../types'
 import { Canvas } from 'canvas'
 
 export async function getImageFromUrl(
@@ -22,15 +18,8 @@ export async function getImageFromUrl(
   }
 }
 
-export function checkImageExist(type: ImageType, fileName: string, fileType = 'png') {
-  const path = `./genshin/${type}/${fileName}.${fileType}`
-  const fullPath = join(DATA_PATH, '/images', path)
-  if (existsSync(fullPath)) {
-    return path
-  }
-  return `./genshin/${type}/default.png`
-}
-
 export function canvas2Base64(canvas: Canvas) {
-  return canvas.toDataURL('image/png').replace(/^data:image\/(png|jpg);base64,/, '')
+  return canvas
+    .toDataURL('image/png')
+    .replace(/^data:image\/(png|jpg);base64,/, 'base64://')
 }

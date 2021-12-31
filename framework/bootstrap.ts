@@ -1,5 +1,3 @@
-import { mirai } from 'framework'
-import { configs } from 'framework/config'
 import 'reflect-metadata'
 import {
   mapModuleInjection,
@@ -13,9 +11,8 @@ import { connection } from './utils'
 /**
  * 加载模块
  * @param modules 模块
- * @param callback mirai回调
  */
-export async function loadModules(modules: Type[], callback?: () => void) {
+export async function loadModules(modules: Type[]) {
   modules
     .filter(T => {
       return methodEnable(T)
@@ -26,10 +23,6 @@ export async function loadModules(modules: Type[], callback?: () => void) {
       mapRepository(t)
       mapModuleMethod(t)
     })
-  await mirai.link(configs.qq)
-  if (callback) {
-    mirai.before(callback)
-  }
 }
 
 export async function connectDb() {
