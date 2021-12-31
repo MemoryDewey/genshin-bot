@@ -46,24 +46,6 @@ export class OneBot {
     return `${this.address}/api`
   }
 
-  // 启动Bot监听
-  public start() {
-    this.eventSocket = new WebSocket(this.eventAddress, { timeout: this.timeout })
-    this.apiSocket = new WebSocket(this.apiAddress, { timeout: this.timeout })
-    this.eventSocket.onopen = () => {
-      logger.info('EventSocket已连接')
-    }
-    this.eventSocket.onclose = () => {
-      logger.error('EventSocket已断开')
-    }
-    this.apiSocket.onopen = () => {
-      logger.info('ApiSocket已连接')
-    }
-    this.apiSocket.onopen = () => {
-      logger.error('ApiSocket已断开')
-    }
-  }
-
   private static eventPrint(message: EventMessage) {
     logger.info(
       `Get message from ${message.user_id}${
@@ -84,6 +66,28 @@ export class OneBot {
     }
   }
 
+  // 启动Bot监听
+  public start() {
+    this.eventSocket = new WebSocket(this.eventAddress, { timeout: this.timeout })
+    this.apiSocket = new WebSocket(this.apiAddress, { timeout: this.timeout })
+    this.eventSocket.onopen = () => {
+      logger.info('EventSocket已连接')
+    }
+    this.eventSocket.onclose = () => {
+      logger.error('EventSocket已断开')
+    }
+    this.eventSocket.on('message', data => {
+      const message = JsonString2Object<GroupEventMessage>(data.toString())
+      if (message.post_type == 'message') {
+        OneBot.eventPrint(message)
+      }
+    })
+    this.apiSocket.on('message', data => {
+      const message = JsonString2Object<ApiMessage>(data.toString())
+      OneBot.apiPrint(message)
+    })
+  }
+
   /**
    * 接收到消息后触发
    */
@@ -91,13 +95,8 @@ export class OneBot {
     this.eventSocket.on('message', data => {
       const message = JsonString2Object<GroupEventMessage>(data.toString())
       if (message.post_type == 'message') {
-        //OneBot.eventPrint(message)
         callback(message)
       }
-    })
-    this.apiSocket.on('message', data => {
-      const message = JsonString2Object<ApiMessage>(data.toString())
-      //OneBot.apiPrint(message)
     })
   }
 
