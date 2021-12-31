@@ -9,10 +9,10 @@
 原神QQ机器人，包含圣遗物评分以及抽卡分析等功能
 
 ## 安装
-1. 安装[Mirai](https://github.com/mamoe/mirai)
-   > Mirai仓库中有详细的安装方式
+1. 安装[go-cqhttp](https://github.com/Mrs4s/go-cqhttp)
+   > go-cqhttp仓库中有详细的安装以及配置方式
    
-2. 安装NodeJS
+2. 安装NodeJS，Node > 16.0
 
 
 3. 使用以下命令拉取本项目：
@@ -21,16 +21,15 @@
    git clone https://github.com/MemoryDewey/genshin-bot.git
    ```
 
-4. 编辑目录下的.env文件，根据自己的Mirai配置修改对应的配置
+4. 编辑目录下的.env文件，根据自己的go-cqhttp配置修改对应的配置
 
 5. 启动
    ```shell
-   npm run start
+   yarn install
+   yarn start
    ```
 
 ## 命令列表
-
-群内使用`原神帮助`进行查看
 
 ### 圣遗物评分
 指令|说明
@@ -65,32 +64,19 @@
 > **注:**  抽卡的链接需要断网获取，详细获取抽卡链接的教程请参考微信公众号派蒙工具箱
 
 
-### 黄历/抽签
-指令|说明
-:--|:--  
-黄历|查看今天的黄历  
-抽签|抽取今日的签
-解签|获得所抽签文的解答
-
-
-### 丘丘语
-
-指令|说明
-:--|:--  
-丘丘一下 [丘丘语句]|翻译丘丘语,注意这个翻译只能把丘丘语翻译成中文，不能反向  
-丘丘词典 [丘丘语句]|查询丘丘语句的单词含义
-
-**例：**`丘丘一下 mita`
-
-
 ## 致谢
-**[mirai-ts](https://github.com/YunYouJun/mirai-ts)**
+**[go-cqhttp](https://github.com/Mrs4s/go-cqhttp)**
 
 **[可莉特调](https://genshin.pub)**
 
 **[Genshin_Impact_bot](https://github.com/H-K-Y/Genshin_Impact_bot)**
 
 ## 更新记录
+
+### 2021-12-31
+* 移除miria, 使用 onebot 架构(go-cqhttp)
+* 移除抽签黄历功能
+* 移除丘丘语翻译功能
 
 ### 2021-6-22
 * 加入圣遗物评分功能
