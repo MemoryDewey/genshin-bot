@@ -11,19 +11,21 @@
 ## 安装
 1. 安装[go-cqhttp](https://github.com/Mrs4s/go-cqhttp)
    > go-cqhttp仓库中有详细的安装以及配置方式
+
+2. 配置好go-cqhttp的正向WS, 默认端口为6700
    
-2. 安装NodeJS，Node > 16.0
+3. 安装NodeJS，Node > 16.0
 
 
-3. 使用以下命令拉取本项目：
+4. 使用以下命令拉取本项目：
 
    ```shell
    git clone https://github.com/MemoryDewey/genshin-bot.git
    ```
 
-4. 编辑目录下的.env文件，根据自己的go-cqhttp配置修改对应的配置
+5. 编辑目录下的.env文件，根据自己的go-cqhttp配置修改对应的配置
 
-5. 启动
+6. 启动
    ```shell
    yarn install
    yarn start
