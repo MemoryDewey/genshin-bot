@@ -81,7 +81,7 @@ export class RateModule {
     } catch (e) {
       const error = e as AxiosError
       if (error.isAxiosError) {
-        logger.error(error.response.data)
+        logger.error(error.response?.data)
       } else {
         logger.error(e.toString())
         return genAtPlainMsg(senderId, '服务器错误')
