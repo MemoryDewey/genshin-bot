@@ -27,11 +27,11 @@ const EventConstructor =
 
 /**
  * 可执行的模块
- * @param enable 是否开启模块
+ * @param name moduleName
  * @constructor
  */
-export const Module = (enable = true): ClassDecorator => {
-  return target => Reflect.defineMetadata(MODULE_METADATA, enable, target)
+export const Module = (name?: string): ClassDecorator => {
+  return target => Reflect.defineMetadata(MODULE_METADATA, name ?? target.name, target)
 }
 
 /**

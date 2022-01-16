@@ -1,7 +1,6 @@
 export * from './image'
 export * from './http'
 export * from './bot'
-export * from './file'
 export * from './parse'
 export * from './time'
 export * from './random'

@@ -5,7 +5,7 @@ import { Repository } from 'typeorm'
 import { Bot, Message } from 'framework/bot'
 import { ReplyContent } from 'framework/bot/connect'
 
-@Module(false)
+@Module('lottery')
 export class LotteryModule {
   @InjectRepository(Lottery)
   private repo: Repository<Lottery>

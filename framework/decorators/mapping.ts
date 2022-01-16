@@ -90,8 +90,8 @@ const onRegex: MsgFunc<RegExp> = (instance, funcName, config) => {
   matchMsg(instance, funcName, config, bot => config.match.test(bot.text))
 }
 
-export function methodEnable(T: Type) {
-  return Reflect.getMetadata(MODULE_METADATA, T) as boolean
+export function methodName(T: Type) {
+  return Reflect.getMetadata(MODULE_METADATA, T) as string
 }
 
 export function mapModuleInjection(instance: object) {

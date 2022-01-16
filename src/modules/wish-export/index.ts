@@ -15,7 +15,7 @@ import { User } from 'src/entities/user.entity'
 import { Bot, Message } from 'framework/bot'
 import { ReplyContent } from 'framework/bot/connect'
 
-@Module()
+@Module('wish-export')
 export class WishExportModule {
   @Inject(' https://hk4e-api.mihoyo.com')
   private http: Http

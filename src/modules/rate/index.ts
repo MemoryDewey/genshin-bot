@@ -18,7 +18,7 @@ import { readFileSync } from 'fs'
 import { Bot } from 'framework/bot'
 import { ReplyContent } from 'framework/bot/connect'
 
-@Module()
+@Module('rate')
 export class RateModule {
   @Inject('https://api.genshin.pub/api')
   private http: Http
