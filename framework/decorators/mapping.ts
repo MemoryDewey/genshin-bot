@@ -48,8 +48,13 @@ function matchMsg(
  * @param funcName 方法名
  * @param config
  */
-const onMatchAll: MsgFunc<string> = (instance, funcName, config) => {
-  matchMsg(instance, funcName, config, bot => bot.text === config.match)
+const onMatchAll: MsgFunc<string | string[]> = (instance, funcName, config) => {
+  matchMsg(instance, funcName, config, bot => {
+    if (Array.isArray(config.match)) {
+      return config.match.includes(bot.text)
+    }
+    return bot.text === config.match
+  })
 }
 /**
  * 前缀匹配
@@ -126,7 +131,7 @@ export function mapModuleMethod(instance: object) {
       if (reflectArg) {
         switch (event as EventType) {
           case ON_MATCH_ALL_METADATA:
-            onMatchAll(instance, item, reflectArg as MsgFuncConfig<string>)
+            onMatchAll(instance, item, reflectArg as MsgFuncConfig<string | string[]>)
             break
           case ON_PREFIX_METADATA:
             onPrefix(instance, item, reflectArg as MsgFuncConfig<string>)

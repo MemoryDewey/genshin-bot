@@ -6,6 +6,8 @@ import {
   EventMessage,
   GroupEventMessage,
   ReplyCallback,
+  ReplyContent,
+  ReplyMessage,
 } from './connect'
 import { JsonString2Object } from 'framework/utils/json'
 import { Bot } from './bot'
@@ -66,10 +68,36 @@ export class OneBot {
     }
   }
 
+  private sendGroupMsg(sendInfo: ReplyMessage[], id: number) {
+    this.apiSocket.send(
+      JSON.stringify({
+        action: 'send_group_msg',
+        params: {
+          group_id: id,
+          message: sendInfo,
+        },
+      }),
+    )
+  }
+
+  private sendPrivateMsg(sendInfo: ReplyMessage[], id: number) {
+    this.apiSocket.send(
+      JSON.stringify({
+        action: 'send_private_msg',
+        params: {
+          user_id: id,
+          message: sendInfo,
+        },
+      }),
+    )
+  }
+
   // 启动Bot监听
   public start() {
     this.eventSocket = new WebSocket(this.eventAddress, { timeout: this.timeout })
+    this.eventSocket.setMaxListeners(50)
     this.apiSocket = new WebSocket(this.apiAddress, { timeout: this.timeout })
+    this.apiSocket.setMaxListeners(50)
     this.eventSocket.onopen = () => {
       logger.info('EventSocket已连接')
     }
@@ -108,17 +136,17 @@ export class OneBot {
     this.onMessage(message => {
       if (message.message_type == 'group') {
         const bot = new Bot(message)
-        const sendMsg = (sendInfo: any) => {
-          if (sendInfo) {
-            this.apiSocket.send(
-              JSON.stringify({
-                action: 'send_group_msg',
-                params: {
-                  group_id: (message as GroupEventMessage).group_id,
-                  message: sendInfo,
-                },
-              }),
-            )
+        const id = (message as GroupEventMessage).group_id
+        const sendMsg = (sendInfo: ReplyContent) => {
+          if (!sendInfo) {
+            return
+          }
+          if (sendInfo.some(val => Array.isArray(val))) {
+            sendInfo.forEach(value => {
+              this.sendGroupMsg(value, id)
+            })
+          } else {
+            this.sendGroupMsg(sendInfo as ReplyMessage[], id)
           }
         }
         const replyInfo = callback(bot)
@@ -141,17 +169,17 @@ export class OneBot {
     this.onMessage(message => {
       if (message.message_type == 'private') {
         const bot = new Bot(message)
-        const sendMsg = (sendInfo: any) => {
-          if (sendInfo) {
-            this.apiSocket.send(
-              JSON.stringify({
-                action: 'send_private_msg',
-                params: {
-                  user_id: message.user_id,
-                  message: sendInfo,
-                },
-              }),
-            )
+        const id = message.user_id
+        const sendMsg = (sendInfo: ReplyContent) => {
+          if (!sendInfo) {
+            return
+          }
+          if (sendInfo.some(val => Array.isArray(val))) {
+            sendInfo.forEach(value => {
+              this.sendPrivateMsg(value, id)
+            })
+          } else {
+            this.sendPrivateMsg(sendInfo as ReplyMessage[], id)
           }
         }
         const replyInfo = callback(bot)

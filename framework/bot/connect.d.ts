@@ -7,9 +7,10 @@ export type ReplyMessageMap = {
   image: { file: string }
   at: { qq: string }
   reply: { id: string }
+  record: { file: string }
 }
-export type ReplayMessageType = 'text' | 'image' | 'at' | 'reply'
-export type ReplyContent = ReplyMessage[] | void
+export type ReplayMessageType = 'text' | 'image' | 'at' | 'reply' | 'record'
+export type ReplyContent = ReplyMessage[] | ReplyMessage[][] | void
 export type ReplyCallback<T> = (bot: T) => ReplyContent | Promise<ReplyContent>
 
 export interface PrivateEventMessage {

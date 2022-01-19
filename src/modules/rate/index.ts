@@ -17,6 +17,7 @@ import { ARTIFACTS_PATH, ROOT_PATH } from 'framework/config'
 import { readFileSync } from 'fs'
 import { Bot } from 'framework/bot'
 import { ReplyContent } from 'framework/bot/connect'
+import { buffer2base64url } from '../../utils/file'
 
 @Module('rate')
 export class RateModule {
@@ -90,7 +91,7 @@ export class RateModule {
       const path = join(ROOT_PATH, ARTIFACTS_PATH, './uploadExample.png')
       const file = readFileSync(path)
       const msg = data?.message ?? '上传图片错误'
-      return genAtPlainImageMsg(senderId, msg, file.toString('base64'))
+      return genAtPlainImageMsg(senderId, msg, buffer2base64url(file))
     }
   }
 

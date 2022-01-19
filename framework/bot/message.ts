@@ -15,4 +15,7 @@ export class Message {
     id = typeof id == 'number' ? id.toString() : id
     return { type: 'reply', data: { id } }
   }
+  static Record(file: string): ReplyMessage {
+    return { type: 'record', data: { file } }
+  }
 }
