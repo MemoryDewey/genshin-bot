@@ -1,8 +1,8 @@
-import { Module, OnMatchAll } from 'framework/decorators'
+import { Module, OnKeyword, OnMatchAll } from 'framework/decorators'
 import { Bot, Message } from 'framework/bot'
 import { ReplyContent } from 'framework/bot/connect'
 import { join } from 'path'
-import { RECORDS_PATH, ROOT_PATH } from 'framework/config'
+import { IMG_PATH, RECORDS_PATH, ROOT_PATH } from 'framework/config'
 import { readFileSync } from 'fs'
 import { buffer2base64url, random } from 'src/utils'
 
@@ -118,7 +118,7 @@ export class DeepChatModule {
     return [Message.Record(buffer2base64url(file))]
   }
 
-  @OnMatchAll(['好色哦', '好色噢', '好涩哦', 'hso'])
+  @OnKeyword(['好色', '好涩', 'hso'])
   public hso(): ReplyContent {
     const path = join(ROOT_PATH, RECORDS_PATH, '好色哦.mp3')
     const file = readFileSync(path)
@@ -132,7 +132,7 @@ export class DeepChatModule {
     return [Message.Record(buffer2base64url(file))]
   }
 
-  @OnMatchAll(['给爷爬'])
+  @OnMatchAll(['给爷爬', '爬', '爪巴'])
   public fk(): ReplyContent {
     const path = join(ROOT_PATH, RECORDS_PATH, '给爷爬.mp3')
     const file = readFileSync(path)
@@ -152,5 +152,83 @@ export class DeepChatModule {
       return [Message.Text('真可惜。不过不要灰心，说不定下一次抽卡就出奇迹了呢！')]
     }
     return [Message.Text('真的吗？好可怜…噗哈哈哈…')]
+  }
+
+  @OnMatchAll(['抱抱', '喜欢', 'suki', 'mua'], { at: true })
+  public soCute(): ReplyContent {
+    const path = join(ROOT_PATH, RECORDS_PATH, '真是个小可爱.mp3')
+    const file = readFileSync(path)
+    return [Message.Record(buffer2base64url(file))]
+  }
+
+  @OnKeyword(['诶嘿', '哎嘿', '欸嘿'])
+  public eiHey(): ReplyContent {
+    const path = join(ROOT_PATH, RECORDS_PATH, '诶嘿.mp3')
+    const file = readFileSync(path)
+    return [Message.Record(buffer2base64url(file))]
+  }
+
+  @OnKeyword(['大佬', '萌新'])
+  public dd5(): ReplyContent {
+    const path = join(ROOT_PATH, RECORDS_PATH, '大佬nb.mp3')
+    const file = readFileSync(path)
+    return [Message.Record(buffer2base64url(file))]
+  }
+
+  @OnKeyword(['好臭啊', '野兽先辈', '哼哼', '啊啊'])
+  public smelly(): ReplyContent {
+    const path = join(ROOT_PATH, IMG_PATH, './chat/臭.jpg')
+    const file = readFileSync(path)
+    return [Message.Image(buffer2base64url(file))]
+  }
+
+  @OnKeyword(['超勇'])
+  public iAmBrave(): ReplyContent {
+    const path = join(ROOT_PATH, IMG_PATH, './chat/勇.jpg')
+    const file = readFileSync(path)
+    return [Message.Image(buffer2base64url(file))]
+  }
+
+  @OnKeyword(['不会吧'])
+  public ohNo(): ReplyContent {
+    const path = join(ROOT_PATH, IMG_PATH, './chat/不会吧.jpg')
+    const file = readFileSync(path)
+    return [Message.Image(buffer2base64url(file))]
+  }
+
+  @OnKeyword(['啊这'])
+  public az(): ReplyContent {
+    const randomInt = random.integer({ min: 1, max: 9 })
+    const path = join(ROOT_PATH, IMG_PATH, `./chat/啊这 (${randomInt}).jpg`)
+    const file = readFileSync(path)
+    return [Message.Image(buffer2base64url(file))]
+  }
+
+  @OnKeyword(['晒卡', '出货', '我中了', '我出了'])
+  public gacha(): ReplyContent {
+    const path = join(ROOT_PATH, IMG_PATH, `./chat/gacha.jpg`)
+    const file = readFileSync(path)
+    return [Message.Image(buffer2base64url(file))]
+  }
+
+  @OnKeyword(['肝'])
+  public wasteLife(): ReplyContent {
+    const path = join(ROOT_PATH, IMG_PATH, `./chat/别肝啦.jpg`)
+    const file = readFileSync(path)
+    return [Message.Image(buffer2base64url(file))]
+  }
+
+  @OnKeyword(['摆烂', '遇到困难'])
+  public bai(): ReplyContent {
+    const path = join(ROOT_PATH, IMG_PATH, `./chat/遇到困难.jpg`)
+    const file = readFileSync(path)
+    return [Message.Image(buffer2base64url(file))]
+  }
+
+  @OnKeyword(['你有问题'], { at: true })
+  public hasTrouble(): ReplyContent {
+    const path = join(ROOT_PATH, IMG_PATH, `./chat/123.jpg`)
+    const file = readFileSync(path)
+    return [Message.Image(buffer2base64url(file))]
   }
 }

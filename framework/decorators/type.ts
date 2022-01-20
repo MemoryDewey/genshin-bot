@@ -1,4 +1,6 @@
 import { Type } from '../interfaces/type.interface'
+import { Bot } from '../bot'
+import { ReplyContent } from '../bot/connect'
 
 export type EventType = 'keyword' | 'matchAll' | 'prefix' | 'suffix' | 'regex'
 
@@ -20,4 +22,4 @@ export type MsgFunc<T> = (
   instance: object,
   funcName: string,
   config: MsgFuncConfig<T>,
-) => void
+) => (bot: Bot) => ReplyContent | Promise<ReplyContent>

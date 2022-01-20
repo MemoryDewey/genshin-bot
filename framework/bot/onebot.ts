@@ -95,9 +95,7 @@ export class OneBot {
   // 启动Bot监听
   public start() {
     this.eventSocket = new WebSocket(this.eventAddress, { timeout: this.timeout })
-    this.eventSocket.setMaxListeners(50)
     this.apiSocket = new WebSocket(this.apiAddress, { timeout: this.timeout })
-    this.apiSocket.setMaxListeners(50)
     this.eventSocket.onopen = () => {
       logger.info('EventSocket已连接')
     }

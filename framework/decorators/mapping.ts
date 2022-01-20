@@ -1,4 +1,3 @@
-import { app as oneBot } from 'framework'
 import { EventMap, EventType, InjectMetadataValue, MsgFunc, MsgFuncConfig } from './type'
 import { Type } from 'framework/interfaces/type.interface'
 import {
@@ -13,6 +12,7 @@ import {
 import { getRepository } from 'typeorm'
 import { Bot } from 'framework/bot'
 import { logger } from '../utils'
+import { ReplyContent } from '../bot/connect'
 
 /**
  * 处理消息
@@ -26,20 +26,19 @@ function matchMsg(
   funcName: string,
   config: MsgFuncConfig<string | RegExp | string[]>,
   pass: (bot: Bot) => boolean,
-) {
+): (bot: Bot) => ReplyContent | Promise<ReplyContent> {
   if (config.type == 'group') {
-    oneBot.onGroupMessage(bot => {
+    return bot => {
       if ((config.at ? bot.isAt : true) && pass(bot)) {
         return instance[funcName](bot)
       }
-    })
-    return
+    }
   }
-  oneBot.onPrivateMessage(bot => {
+  return bot => {
     if (pass(bot)) {
       return instance[funcName](bot)
     }
-  })
+  }
 }
 
 /**
@@ -48,52 +47,47 @@ function matchMsg(
  * @param funcName 方法名
  * @param config
  */
-const onMatchAll: MsgFunc<string | string[]> = (instance, funcName, config) => {
+const onMatchAll: MsgFunc<string | string[]> = (instance, funcName, config) =>
   matchMsg(instance, funcName, config, bot => {
     if (Array.isArray(config.match)) {
       return config.match.includes(bot.text)
     }
     return bot.text === config.match
   })
-}
 /**
  * 前缀匹配
  * @param instance
  * @param funcName
  * @param config
  */
-const onPrefix: MsgFunc<string> = (instance, funcName, config) => {
+const onPrefix: MsgFunc<string> = (instance, funcName, config) =>
   matchMsg(instance, funcName, config, bot => bot.text.startsWith(config.match))
-}
 /**
  * 后缀匹配
  * @param instance
  * @param funcName
  * @param config
  */
-const onSuffix: MsgFunc<string> = (instance, funcName, config) => {
+const onSuffix: MsgFunc<string> = (instance, funcName, config) =>
   matchMsg(instance, funcName, config, bot => bot.text.endsWith(config.match))
-}
 /**
  * 关键词匹配
  * @param instance
  * @param funcName
  * @param config
  */
-const onKeyword: MsgFunc<string[]> = (instance, funcName, config) => {
+const onKeyword: MsgFunc<string[]> = (instance, funcName, config) =>
   matchMsg(instance, funcName, config, bot =>
     config.match.some(value => bot.text.includes(value)),
   )
-}
 /**
  * 正则匹配
  * @param instance
  * @param funcName
  * @param config
  */
-const onRegex: MsgFunc<RegExp> = (instance, funcName, config) => {
+const onRegex: MsgFunc<RegExp> = (instance, funcName, config) =>
   matchMsg(instance, funcName, config, bot => config.match.test(bot.text))
-}
 
 export function methodName(T: Type) {
   return Reflect.getMetadata(MODULE_METADATA, T) as string
@@ -123,31 +117,33 @@ export function mapModuleMethod(instance: object) {
   const methodName = Object.getOwnPropertyNames(prototype).filter(
     item => item != 'constructor' && typeof prototype[item] == 'function',
   )
-  methodName.map(item => {
-    EventMap.forEach(event => {
-      const reflectArg = Reflect.getMetadata(event, prototype[item]) as MsgFuncConfig<
-        string | string[] | RegExp
-      >
-      if (reflectArg) {
-        switch (event as EventType) {
-          case ON_MATCH_ALL_METADATA:
-            onMatchAll(instance, item, reflectArg as MsgFuncConfig<string | string[]>)
-            break
-          case ON_PREFIX_METADATA:
-            onPrefix(instance, item, reflectArg as MsgFuncConfig<string>)
-            break
-          case ON_SUFFIX_METADATA:
-            onSuffix(instance, item, reflectArg as MsgFuncConfig<string>)
-            break
-          case ON_KEYWORD_METADATA:
-            onKeyword(instance, item, reflectArg as MsgFuncConfig<string[]>)
-            break
-          case ON_REGEX_METADATA:
-            onRegex(instance, item, reflectArg as MsgFuncConfig<RegExp>)
-            break
+  const eventArr = methodName
+    .map(item => {
+      for (const event of EventMap) {
+        const reflectArg = Reflect.getMetadata(event, prototype[item]) as MsgFuncConfig<
+          string | string[] | RegExp
+        >
+        if (reflectArg) {
+          switch (event as EventType) {
+            case ON_MATCH_ALL_METADATA:
+              return onMatchAll(
+                instance,
+                item,
+                reflectArg as MsgFuncConfig<string | string[]>,
+              )
+            case ON_PREFIX_METADATA:
+              return onPrefix(instance, item, reflectArg as MsgFuncConfig<string>)
+            case ON_SUFFIX_METADATA:
+              return onSuffix(instance, item, reflectArg as MsgFuncConfig<string>)
+            case ON_KEYWORD_METADATA:
+              return onKeyword(instance, item, reflectArg as MsgFuncConfig<string[]>)
+            case ON_REGEX_METADATA:
+              return onRegex(instance, item, reflectArg as MsgFuncConfig<RegExp>)
+          }
         }
       }
     })
-  })
+    .filter(val => !!val)
   logger.info(`Load ${name} success`)
+  return eventArr
 }
