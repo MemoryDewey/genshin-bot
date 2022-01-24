@@ -49,13 +49,15 @@ export class OneBot {
   }
 
   private static eventPrint(message: EventMessage) {
-    logger.info(
-      `Get message from ${message.user_id}${
-        message.message_type == 'group'
-          ? `@[群:${(message as GroupEventMessage).group_id}]`
-          : ''
-      }:${message.message}`,
-    )
+    if ('message' in message) {
+      logger.info(
+        `Get message from ${message.user_id}${
+          message.message_type == 'group'
+            ? `@[群:${(message as GroupEventMessage).group_id}]`
+            : ''
+        }:${message.message}`,
+      )
+    }
   }
 
   private static apiPrint(message: ApiMessage) {
@@ -117,10 +119,10 @@ export class OneBot {
   /**
    * 接收到消息后触发
    */
-  public onMessage(callback: EventCallback) {
+  private onMessage(callback: EventCallback) {
     this.eventSocket.on('message', data => {
       const message = JsonString2Object<GroupEventMessage>(data.toString())
-      if (message.post_type == 'message') {
+      if (message.post_type == 'message' || message.post_type == 'request') {
         callback(message)
       }
     })
@@ -188,6 +190,47 @@ export class OneBot {
         } else {
           sendMsg(replyInfo)
         }
+      }
+    })
+  }
+
+  /**
+   * 设置加群答案条件，不满足的直接拒绝，需要机器人有群管理权限
+   * @param groupId 群号
+   * @param condition 加群答案条件
+   */
+  public setGroupWhiteList(groupId: number, condition: string | string[] | RegExp) {
+    logger.info(`Group: ${groupId} whiteList start`)
+    const rejectGroupAdd = (flag: string) => {
+      this.apiSocket.send(
+        JSON.stringify({
+          action: 'set_group_add_request',
+          params: {
+            flag,
+            sub_type: 'add',
+            approve: false,
+          },
+        }),
+      )
+    }
+
+    this.onMessage(message => {
+      if (
+        'request_type' in message &&
+        message.post_type === 'request' &&
+        message.request_type === 'group' &&
+        message.sub_type === 'add' &&
+        message.group_id === groupId
+      ) {
+        let flag = true
+        if (typeof condition == 'string') {
+          flag = condition == message.comment
+        } else if (Array.isArray(condition)) {
+          flag = condition.includes(message.comment)
+        } else {
+          flag = condition.test(message.comment)
+        }
+        !flag && rejectGroupAdd(message.flag)
       }
     })
   }

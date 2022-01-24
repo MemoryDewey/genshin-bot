@@ -1,6 +1,6 @@
 export type PostType = 'message' | 'notice' | 'request' | 'meta_event'
 export type MessageType = 'group' | 'private'
-export type EventMessage = PrivateEventMessage | GroupEventMessage
+export type EventMessage = PrivateEventMessage | GroupEventMessage | GroupRequestMessage
 export type EventCallback = (message: EventMessage) => void
 export type ReplyMessageMap = {
   text: { text: string }
@@ -13,14 +13,17 @@ export type ReplayMessageType = 'text' | 'image' | 'at' | 'reply' | 'record'
 export type ReplyContent = ReplyMessage[] | ReplyMessage[][] | void
 export type ReplyCallback<T> = (bot: T) => ReplyContent | Promise<ReplyContent>
 
-export interface PrivateEventMessage {
+export interface BaseEventMessage {
+  message_type: MessageType
+  post_type: PostType
+  self_id: number
+}
+
+export interface PrivateEventMessage extends BaseEventMessage {
   font: number
   message: string
   message_id: number
-  message_type: MessageType
-  post_type: PostType
   raw_message: string
-  self_id: number
   sender: PrivateSenderInfo
   sub_type: string
   target_id: number
@@ -60,4 +63,14 @@ export interface ApiMessage {
   status: 'ok' | 'failed'
   msg?: string
   wording?: string
+}
+
+export interface GroupRequestMessage extends BaseEventMessage {
+  time: number
+  sub_type: 'add' | 'invite'
+  request_type: 'friend' | 'group'
+  group_id: number
+  user_id: number
+  comment: string
+  flag: string
 }
