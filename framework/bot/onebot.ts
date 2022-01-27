@@ -102,7 +102,7 @@ export class OneBot {
       logger.info('EventSocket已连接')
     }
     this.eventSocket.onclose = () => {
-      logger.error('EventSocket已断开')
+      throw new Error('EventSocket已断开')
     }
     this.eventSocket.on('message', data => {
       const message = JsonString2Object<GroupEventMessage>(data.toString())
@@ -222,7 +222,7 @@ export class OneBot {
         message.sub_type === 'add' &&
         message.group_id === groupId
       ) {
-        let flag = true
+        let flag
         if (typeof condition == 'string') {
           flag = condition == message.comment
         } else if (Array.isArray(condition)) {
