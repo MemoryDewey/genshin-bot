@@ -102,7 +102,11 @@ export class OneBot {
       logger.info('EventSocket已连接')
     }
     this.eventSocket.onclose = () => {
-      throw new Error('EventSocket已断开')
+      logger.error('EventSocket已断开')
+      setTimeout(() => {
+        logger.info('3s后尝试重新连接')
+        this.start()
+      }, 3000)
     }
     this.eventSocket.on('message', data => {
       const message = JsonString2Object<GroupEventMessage>(data.toString())
