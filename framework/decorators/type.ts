@@ -1,6 +1,11 @@
 import { Type } from '../interfaces/type.interface'
 import { Bot } from '../bot'
 import { ReplyContent } from '../bot/connect'
+import {
+  RecurrenceRule,
+  RecurrenceSpecDateRange,
+  RecurrenceSpecObjLit,
+} from 'node-schedule'
 
 export type EventType = 'keyword' | 'matchAll' | 'prefix' | 'suffix' | 'regex'
 
@@ -23,3 +28,11 @@ export type MsgFunc<T> = (
   funcName: string,
   config: MsgFuncConfig<T>,
 ) => (bot: Bot) => ReplyContent | Promise<ReplyContent>
+
+export type ScheduleRule =
+  | RecurrenceRule
+  | RecurrenceSpecDateRange
+  | RecurrenceSpecObjLit
+  | Date
+  | string
+  | number

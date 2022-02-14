@@ -1,4 +1,11 @@
-import { EventMap, EventType, InjectMetadataValue, MsgFunc, MsgFuncConfig } from './type'
+import {
+  EventMap,
+  EventType,
+  InjectMetadataValue,
+  MsgFunc,
+  MsgFuncConfig,
+  ScheduleRule,
+} from './type'
 import { Type } from 'framework/interfaces/type.interface'
 import {
   MODULE_METADATA,
@@ -8,8 +15,10 @@ import {
   ON_REGEX_METADATA,
   ON_SUFFIX_METADATA,
   REPOSITORY_METADATA,
+  SCHEDULE_METADATA,
 } from './metadata'
 import { getRepository } from 'typeorm'
+import { scheduleJob } from 'node-schedule'
 import { Bot } from 'framework/bot'
 import { logger } from '../utils'
 import { ReplyContent } from '../bot/connect'
@@ -141,6 +150,14 @@ export function mapModuleMethod(instance: object) {
               return onRegex(instance, item, reflectArg as MsgFuncConfig<RegExp>)
           }
         }
+      }
+      // schedule
+      const scheduleReflect = Reflect.getMetadata(
+        SCHEDULE_METADATA,
+        prototype[item],
+      ) as ScheduleRule
+      if (scheduleReflect) {
+        scheduleJob(`${name}-${item}`, scheduleReflect, instance[item])
       }
     })
     .filter(val => !!val)

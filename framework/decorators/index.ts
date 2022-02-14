@@ -5,8 +5,14 @@ import {
   ON_PREFIX_METADATA,
   ON_SUFFIX_METADATA,
   REPOSITORY_METADATA,
+  SCHEDULE_METADATA,
 } from 'framework/decorators/metadata'
-import { EventType, InjectMetadataValue, MsgFuncConfig } from 'framework/decorators/type'
+import {
+  EventType,
+  InjectMetadataValue,
+  MsgFuncConfig,
+  ScheduleRule,
+} from 'framework/decorators/type'
 import { Type } from '../interfaces/type.interface'
 
 const EventConstructor =
@@ -72,6 +78,12 @@ export const InjectRepository = <Entity>(entity: Type<Entity>): PropertyDecorato
       entity,
       target,
     )
+  }
+}
+
+export const Schedule = (rule: ScheduleRule): MethodDecorator => {
+  return (target, propertyKey, descriptor) => {
+    Reflect.defineMetadata(SCHEDULE_METADATA, rule, descriptor.value)
   }
 }
 

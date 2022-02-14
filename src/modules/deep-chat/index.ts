@@ -11,7 +11,7 @@ export class DeepChatModule {
   @OnMatchAll(['早安', '早安哦', '早上好', '早上好啊', '早上好呀', '早', 'good morning'])
   public goodMorning(bot: Bot): ReplyContent {
     const nowHours = new Date().getHours()
-    let msg = []
+    let msg: ReplyContent
     if (nowHours >= 0 && nowHours < 6) {
       msg = [[Message.Text(`好早，现在才${nowHours}点呢`)]]
     } else if (nowHours >= 6 && nowHours < 10) {
@@ -53,7 +53,7 @@ export class DeepChatModule {
   @OnMatchAll(['晚上好', '晚上好啊', '晚上好呀', 'good evening'])
   public goodEvening(bot: Bot): ReplyContent {
     const nowHours = new Date().getHours()
-    let msg = []
+    let msg: ReplyContent
     if (nowHours >= 18 && nowHours < 24) {
       const path = join(ROOT_PATH, RECORDS_PATH, '刻晴晚上好.mp3')
       const file = readFileSync(path)
@@ -77,7 +77,7 @@ export class DeepChatModule {
   @OnMatchAll(['晚安', '晚安哦', '晚安啦', 'good night'])
   public goodNight(bot: Bot): ReplyContent {
     const nowHours = new Date().getHours()
-    let msg = []
+    let msg: ReplyContent
     if (nowHours <= 3 || nowHours >= 21) {
       const path = join(ROOT_PATH, RECORDS_PATH, '甘雨晚安.mp3')
       const file = readFileSync(path)
