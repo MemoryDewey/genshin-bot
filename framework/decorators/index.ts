@@ -3,6 +3,7 @@ import {
   ON_KEYWORD_METADATA,
   ON_MATCH_ALL_METADATA,
   ON_PREFIX_METADATA,
+  ON_REGEX_METADATA,
   ON_SUFFIX_METADATA,
   REPOSITORY_METADATA,
   SCHEDULE_METADATA,
@@ -95,3 +96,5 @@ export const OnPrefix = EventConstructor(ON_PREFIX_METADATA)
 export const OnSuffix = EventConstructor(ON_SUFFIX_METADATA)
 // 关键词匹配
 export const OnKeyword = EventConstructor(ON_KEYWORD_METADATA)
+// 正则匹配
+export const OnRegex = EventConstructor(ON_REGEX_METADATA)

@@ -1,4 +1,4 @@
-import { Module, OnKeyword, OnMatchAll } from 'framework/decorators'
+import { Module, OnKeyword, OnMatchAll, OnRegex } from 'framework/decorators'
 import { Bot, Message } from 'framework/bot'
 import { ReplyContent } from 'framework/bot/connect'
 import { join } from 'path'
@@ -99,7 +99,7 @@ export class DeepChatModule {
     return msg
   }
 
-  @OnMatchAll(['吃派蒙'])
+  @OnRegex(/[吃煮炖]派蒙/)
   public eatMe(bot: Bot): ReplyContent {
     return [Message.At(bot.senderId), Message.Text('这样不好，真的')]
   }
@@ -168,18 +168,22 @@ export class DeepChatModule {
     return [Message.Record(buffer2base64url(file))]
   }
 
-  @OnKeyword(['大佬', '萌新'])
+  @OnKeyword(['大佬'])
   public dd5(): ReplyContent {
     const path = join(ROOT_PATH, RECORDS_PATH, '大佬nb.mp3')
     const file = readFileSync(path)
     return [Message.Record(buffer2base64url(file))]
   }
 
-  @OnKeyword(['好臭啊', '野兽先辈', '哼哼', '啊啊'])
+  @OnKeyword(['好臭啊', '野兽先辈', '哼哼', '啊啊啊'])
   public smelly(): ReplyContent {
     const path = join(ROOT_PATH, IMG_PATH, './chat/臭.jpg')
     const file = readFileSync(path)
-    return [Message.Image(buffer2base64url(file))]
+    const recordFile = readFileSync(join(ROOT_PATH, RECORDS_PATH, '臭.mp3'))
+    return [
+      [Message.Image(buffer2base64url(file))],
+      [Message.Record(buffer2base64url(recordFile))],
+    ]
   }
 
   @OnKeyword(['超勇'])
@@ -230,5 +234,12 @@ export class DeepChatModule {
     const path = join(ROOT_PATH, IMG_PATH, `./chat/123.jpg`)
     const file = readFileSync(path)
     return [Message.Image(buffer2base64url(file))]
+  }
+
+  @OnKeyword(['砌闯', '起床', '懒床', 'debu'])
+  public debuCat(): ReplyContent {
+    const path = join(ROOT_PATH, RECORDS_PATH, 'Hiiro 起床闹钟.mp3')
+    const file = readFileSync(path)
+    return [Message.Record(buffer2base64url(file))]
   }
 }
