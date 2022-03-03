@@ -22,10 +22,14 @@
    ```shell
    git clone https://github.com/MemoryDewey/genshin-bot.git
    ```
+   国内可从gitee拉取项目
+   ```shell
+   git clone https://gitee.com/miinori/genshin-bot.git
+   ```
 
-5. 编辑目录下的.env文件，根据自己的go-cqhttp配置修改对应的配置
+6. 编辑目录下的.env文件，根据自己的go-cqhttp配置修改对应的配置
 
-6. 启动
+7. 启动
    ```shell
    yarn install
    yarn start
