@@ -1,10 +1,11 @@
-import { OneBot } from 'framework/bot'
+import { readFileSync } from 'fs'
+import { join } from 'path'
+import { ROOT_PATH } from '../framework/config'
+import { artifactOcr } from '../src/utils/ocr'
 
-const app = new OneBot({ host: '1.14.246.248', port: 6700 })
+const image = readFileSync(join(ROOT_PATH, './test/img.png'))
+const imageUrl = `data:image/png;base64,${image.toString('base64')}`
 
-app.start()
-app.onGroupMessage(bot => {
-  if (bot.isAt) {
-    return [{ type: 'text', data: { text: 'TextMsg' } }]
-  }
+artifactOcr(imageUrl).then(res => {
+  console.log(res)
 })
