@@ -9,8 +9,9 @@ const configs = {
 }
 
 const ROOT_PATH = join(__dirname, '../')
+const ASSET_PATH = './src/assets'
 const ARTIFACTS_PATH = './src/assets/images/artifacts'
 const RECORDS_PATH = './src/assets/records'
 const IMG_PATH = './src/assets/images'
 
-export { configs, ROOT_PATH, ARTIFACTS_PATH, RECORDS_PATH, IMG_PATH }
+export { configs, ROOT_PATH, ARTIFACTS_PATH, RECORDS_PATH, IMG_PATH, ASSET_PATH }

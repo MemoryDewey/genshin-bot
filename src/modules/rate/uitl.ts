@@ -1,7 +1,6 @@
 import { existsSync } from 'fs'
 import { join } from 'path'
-import { ARTIFACTS_PATH, ROOT_PATH } from 'framework/config'
-import { createCanvas, loadImage, registerFont } from 'canvas'
+import { ARTIFACTS_PATH, ASSET_PATH, ROOT_PATH } from 'framework/config'
 import { readFileSync } from 'fs'
 import { MainItem, OcrResponse, SubItem } from 'src/interfaces'
 import {
@@ -13,8 +12,9 @@ import {
   SubPercentRate,
 } from './constant'
 import { logger } from 'framework/utils'
-import { canvas2Base64 } from 'src/utils'
+import { genBase64Url, img2Base64 } from 'src/utils'
 import { MainPropertyTypes, Position, SubPropertyTypes } from 'src/types'
+import nodeHtmlToImage from 'node-html-to-image'
 
 /**
  * 设置圣遗物评分图片
@@ -30,71 +30,45 @@ export async function genRatedImage(
   },
 ) {
   try {
-    const fontPath = join(ROOT_PATH, './src/assets/font/NotoSansSC-Regular.otf')
-    registerFont(fontPath, { family: 'Sans' })
-    const canvas = createCanvas(641, 530)
-    const ctx = canvas.getContext('2d')
-    // 背景图片路径
-    const path = join(ROOT_PATH, ARTIFACTS_PATH, './background.png')
-    let file = readFileSync(path)
-    const img = await loadImage(file)
+    const rateTemplate = readFileSync(
+      join(ROOT_PATH, ASSET_PATH, './template/rate.handlebars'),
+    ).toString('utf-8')
+    // 字体
+    const fontBase64 = readFileSync(
+      join(ROOT_PATH, ASSET_PATH, './font/NotoSansSC-Regular.otf'),
+    ).toString('base64')
+    // 背景图片
+    const backgroundBase64 = img2Base64(
+      join(ROOT_PATH, ARTIFACTS_PATH, './background.png'),
+      'png',
+    )
     // 圣遗物图片路径
-    let artifact = join(ROOT_PATH, ARTIFACTS_PATH, `${info.name}.png`)
-    if (!existsSync(artifact)) {
-      artifact = join(ROOT_PATH, ARTIFACTS_PATH, `default.png`)
+    let artifactPath = join(ROOT_PATH, ARTIFACTS_PATH, `${info.name}.png`)
+    if (!existsSync(artifactPath)) {
+      artifactPath = join(ROOT_PATH, ARTIFACTS_PATH, `default.png`)
     }
-    file = readFileSync(artifact)
-    const artifactImg = await loadImage(file)
-    // 画背景
-    ctx.drawImage(img, 0, 0, 641, 275)
-    ctx.fillStyle = '#ece5d8'
-    ctx.fillRect(0, 275, 640, 256)
-    // 画圣遗物图片
-    ctx.drawImage(artifactImg, 420, 45, 175, 175)
-    // 画文字
-    // 圣遗物名称
-    ctx.textBaseline = 'bottom'
-    ctx.fillStyle = '#dbac70'
-    ctx.font = 'bold 36px Sans'
-    ctx.fillText(info.name, 32, 64)
-
-    //圣遗物分数
-    ctx.fillStyle = '#dbcfc0'
-    ctx.font = '24px Sans'
-    ctx.fillText(`最终得分`, 32, 108)
-    ctx.fillText(`${scores.main.toFixed(2)} + ${scores.sub.toFixed(2)}`, 32, 145)
-    ctx.fillStyle = 'gold'
-    ctx.font = '90px Sans'
-    ctx.fillText(`${scores.total.toFixed(2)}`, 32, 255)
-
+    const artifactBase64 = img2Base64(artifactPath, 'png')
     // 圣遗物属性
-    const star = join(ROOT_PATH, ARTIFACTS_PATH, './star.png')
-    const dot = join(ROOT_PATH, ARTIFACTS_PATH, './dot.png')
-    file = readFileSync(star)
-    const starImg = await loadImage(file)
-    const dotImg = await loadImage(dot)
-    // 主词条
-    ctx.drawImage(starImg, 32, 300, 24, 24)
-    ctx.fillStyle = '#495366'
-    ctx.font = 'bold 28px Sans'
-    ctx.fillText(info.main_item.name, 80, 325)
-    ctx.fillText(info.main_item.value, 470, 325)
-    // 副词条
-    ctx.fillStyle = '#495366'
-    ctx.font = 'bold 20px Sans'
-    ctx.drawImage(dotImg, 35, 345, 16, 16)
-    ctx.fillText(info.sub_item[0].name, 80, 365)
-    ctx.fillText(info.sub_item[0].value, 470, 365)
-    ctx.drawImage(dotImg, 35, 390, 16, 16)
-    ctx.fillText(info.sub_item[1].name, 80, 410)
-    ctx.fillText(info.sub_item[1].value, 470, 410)
-    ctx.drawImage(dotImg, 35, 435, 16, 16)
-    ctx.fillText(info.sub_item[2].name, 80, 455)
-    ctx.fillText(info.sub_item[2].value, 470, 455)
-    ctx.drawImage(dotImg, 35, 480, 16, 16)
-    ctx.fillText(info.sub_item[3].name, 80, 500)
-    ctx.fillText(info.sub_item[3].value, 470, 500)
-    return canvas2Base64(canvas)
+    const starBase64 = img2Base64(join(ROOT_PATH, ARTIFACTS_PATH, './star.png'), 'png')
+    const { name, main_item, sub_item } = info
+    const { main, sub, total } = scores
+    const image = (await nodeHtmlToImage({
+      html: rateTemplate,
+      content: {
+        fontBase64,
+        backgroundBase64,
+        artifactBase64,
+        starBase64,
+        name,
+        main,
+        sub,
+        total,
+        main_item,
+        sub_item,
+      },
+      encoding: 'base64',
+    })) as string
+    return genBase64Url(image)
   } catch (e) {
     logger.error(e.toString())
     return false
