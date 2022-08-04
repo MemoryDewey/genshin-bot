@@ -13,7 +13,7 @@ export const imageDataToURL = (imageData: ImageData) => {
     // update canvas with new data
     ctx.putImageData(canvasImageData, 0, 0)
     // produces a PNG file
-    writeFileSync(`./test/${Math.random()}.png`, canvas.toBuffer())
+    // writeFileSync(`./test/${Math.random()}.png`, canvas.toBuffer())
     return canvas.toDataURL()
   }
   throw new Error('Canvas context is not initialized')

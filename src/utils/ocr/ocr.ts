@@ -21,7 +21,7 @@ const getOcr = async (image: ImageLike, options: OcrOptions = {}) => {
   const langFile = options.langFile ?? 'chi_sim'
   const langPath = options.langPath ?? '/'
 
-  /*const worker = createWorker({
+  const worker = createWorker({
     // langPath,
     // gzip: options.langPath !== undefined,
     logger: (m: TesseractProgress) => {
@@ -30,21 +30,21 @@ const getOcr = async (image: ImageLike, options: OcrOptions = {}) => {
     errorHandler: err => console.error(err),
   })
   const schedule = createScheduler()
-  schedule.addWorker(worker)*/
-  return recognize(image, langFile, {
+  schedule.addWorker(worker)
+  /*return recognize(image, langFile, {
     logger: (m: TesseractProgress) => {
       if (progressCb) progressCb(m)
     },
     errorHandler: err => console.error(err),
-  })
-  //await worker.load()
-  //await worker.loadLanguage(langFile)
-  //await worker.initialize(langFile)
+  })*/
+  await worker.load()
+  await worker.loadLanguage(langFile)
+  await worker.initialize(langFile)
   // sparse text seems to work better
-  //await worker.setParameters({ tessedit_pageseg_mode: PSM.SPARSE_TEXT })
-  //const result = await worker.recognize(image)
-  //await worker.terminate()
-  //return result
+  await worker.setParameters({ tessedit_pageseg_mode: PSM.SPARSE_TEXT })
+  const result = await worker.recognize(image)
+  await worker.terminate()
+  return result
 }
 
 export default getOcr
