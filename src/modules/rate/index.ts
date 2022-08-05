@@ -17,7 +17,7 @@ import { ARTIFACTS_PATH, ROOT_PATH } from 'framework/config'
 import { readFileSync } from 'fs'
 import { Bot } from 'framework/bot'
 import { ReplyContent } from 'framework/bot/connect'
-import { buffer2base64url } from '../../utils/file'
+import { buffer2base64url } from 'src/utils'
 
 @Module('rate')
 export class RateModule {

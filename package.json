@@ -6,7 +6,8 @@
   "scripts": {
     "start": "nodemon --config nodemon.json",
     "prettier": "prettier --write .",
-    "test": "ts-node -r tsconfig-paths/register test"
+    "test": "ts-node -r tsconfig-paths/register test",
+    "lint": "eslint --fix --ext .ts src framework lib"
   },
   "keywords": [],
   "author": "",
@@ -22,6 +23,7 @@
     "node-schedule": "^2.1.0",
     "reflect-metadata": "^0.1.13",
     "sqlite3": "^5.0.2",
+    "tesseract.js": "^2.1.5",
     "typeorm": "^0.2.34",
     "ws": "^8.4.0"
   },
