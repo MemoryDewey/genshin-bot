@@ -4,7 +4,7 @@ import { guessWith } from './parse/helper'
 import guessMainStat from './parse/guessMainStat'
 import guessSubStats from './parse/guessSubStats'
 import guessEnhancement from './parse/guessEnhancement'
-import { FindTextRegions, Marvin, MarvinImage } from 'lib/marvinj'
+import { MarvinImage } from 'lib/marvinj'
 import { preprocessArtifact } from './preprocessing'
 import getOcr, { OcrOptions } from './ocr'
 import guessRarity from './parse/guessRarity'
@@ -33,7 +33,7 @@ export const parseArtifact = (
 
 type Options = { onProgress?: OcrOptions['onProgress'] }
 export const artifactOcr = async (imageData: string, options: Options = {}) => {
-  console.time('Marvin')
+  console.time('Marvin Deal Image:')
   const marvinLoad = (url: string): Promise<MarvinImage> => {
     return new Promise(resolve => {
       const img = new MarvinImage()
@@ -44,8 +44,8 @@ export const artifactOcr = async (imageData: string, options: Options = {}) => {
   }
   const image = await marvinLoad(imageData)
   const processed = Object.values(preprocessArtifact(image))
-  console.timeEnd('Marvin')
-  console.time('Ocr')
+  console.timeEnd('Marvin Deal Image:')
+  console.time('Ocr Image:')
   const [topRes, botRes, setRes] = await Promise.all(
     processed.map(data =>
       getOcr(data, {
@@ -53,7 +53,7 @@ export const artifactOcr = async (imageData: string, options: Options = {}) => {
       }),
     ),
   )
-  console.timeEnd('Ocr')
+  console.timeEnd('Ocr Image:')
   const parse = parseArtifact(topRes, botRes, setRes)
   const rarity = guessRarity(image)
   const enhancement = guessEnhancement(parse.mainStat.value, rarity)
