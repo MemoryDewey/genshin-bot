@@ -15,6 +15,13 @@ export class Bot {
   }
 
   /**
+   * 发消息的群
+   */
+  public get senderGroupId() {
+    return (this.event as GroupEventMessage).group_id
+  }
+
+  /**
    * 是否为管理员
    */
   public get isManager() {

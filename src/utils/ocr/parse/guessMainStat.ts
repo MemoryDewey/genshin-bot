@@ -4,9 +4,17 @@ import {
   matchNumbers,
   parseStatKey,
   removeGarbo,
+  ValueType,
 } from './helper'
-import { statRef } from '../data/translation'
+import { StatKey, statRef } from '../data/translation'
 import { RecognizeResult } from 'tesseract.js'
+
+export interface Stat {
+  key: StatKey
+  name: string
+  value: number
+  type: ValueType
+}
 
 const guessMainStatValue = (data: RecognizeResult) => {
   return data.data.lines
@@ -24,7 +32,7 @@ const guessMainStatValue = (data: RecognizeResult) => {
 
 const guessMainStatKey = guessWith(Object.values(statRef).map(a => a.chs))
 
-export const guessMainStat = (data: RecognizeResult) => {
+export const guessMainStat: (data: RecognizeResult) => Stat = data => {
   const value = guessMainStatValue(data)
   const name = guessMainStatKey(data) ?? ''
   const type = getValueType(value[0])

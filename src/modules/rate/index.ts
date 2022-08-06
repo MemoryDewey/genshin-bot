@@ -1,14 +1,13 @@
+import { InjectRepository, Module, OnMatchAll, OnPrefix } from 'framework/decorators'
 import {
-  Inject,
-  InjectRepository,
-  Module,
-  OnMatchAll,
-  OnPrefix,
-} from 'framework/decorators'
-import { AxiosError } from 'axios'
-import { OcrResponse, RateError } from 'src/interfaces'
-import { genAtPlainImageMsg, genAtPlainMsg, getImageFromUrl, Http } from 'src/utils'
-import { calcMainPropScore, calcSubPropScore, genRatedImage } from './uitl'
+  artifactOcr,
+  buffer2base64url,
+  genAtPlainImageMsg,
+  genAtPlainMsg,
+  getImageFromUrl,
+  OcrResponse,
+} from 'src/utils'
+import { calcMainPropScore, calcSubPropScore, genRatedImage, getStatValue } from './uitl'
 import { logger } from 'framework/utils'
 import { Repository } from 'typeorm'
 import { Rate } from 'src/entities'
@@ -16,29 +15,27 @@ import { join } from 'path'
 import { ARTIFACTS_PATH, ROOT_PATH } from 'framework/config'
 import { readFileSync } from 'fs'
 import { Bot } from 'framework/bot'
-import { ReplyContent } from 'framework/bot/connect'
-import { buffer2base64url } from 'src/utils'
+import { ReplyContent, ReplyMessage } from 'framework/bot/connect'
+import * as Buffer from 'buffer'
+import { app } from 'framework'
 
 @Module('rate')
 export class RateModule {
-  @Inject('https://api.genshin.pub/api')
-  private http: Http
-
   @InjectRepository(Rate)
   private repo: Repository<Rate>
 
   protected ocrResToStr(data: OcrResponse): string[] {
     return [
-      `${data.name}\n`,
-      `${data.main_item.name} : ${data.main_item.value}\n`,
-      ...data.sub_item.map(item => `${item.name} : ${item.value}\n`),
+      `${data.piece}\n`,
+      `${data.mainStat.name} : ${getStatValue(data.mainStat)}\n`,
+      ...data.subStats.map(item => `${item.name} : ${getStatValue(item)}\n`),
     ]
   }
 
   protected async rateArtifacts(bot: Bot, ocr: OcrResponse) {
     const id = bot.senderId
-    const mainScore = calcMainPropScore(ocr.main_item, ocr.pos)
-    const subScore = calcSubPropScore(ocr.sub_item, ocr.main_item.type, ocr.pos)
+    const mainScore = calcMainPropScore(ocr.mainStat, ocr.slot)
+    const subScore = calcSubPropScore(ocr.subStats, ocr.mainStat.key, ocr.slot)
     if (mainScore == -1 || subScore == -1) {
       const rate = new Rate(id, ocr)
       await this.repo.save(rate)
@@ -70,27 +67,25 @@ export class RateModule {
     if (imageUrls == null) {
       return genAtPlainMsg(senderId, '你上传的圣遗物图片嘞？')
     }
-    const imgBase64 = await getImageFromUrl(imageUrls[0])
+    const imgBuffer = (await getImageFromUrl(imageUrls[0], 'buffer')) as Buffer
+    if (imgBuffer.length > 1024 * 1024) {
+      return genAtPlainMsg(senderId, '请上传小于 1 MB 的圣遗物图片')
+    }
     try {
-      const { data } = await this.http.post<OcrResponse>('/v1/app/ocr', {
-        image: imgBase64,
-      })
-      if (data.sub_item.length < 4) {
+      app.sendGroupMsg(
+        genAtPlainMsg(senderId, '正在识别上传的圣遗物，请稍等......') as ReplyMessage[],
+        bot.senderGroupId,
+      )
+      const ocrRes = await artifactOcr(imageUrls[0])
+      if (ocrRes?.subStats?.length < 4) {
         return genAtPlainMsg(senderId, '请上传4个词条的圣遗物')
       }
-      return this.rateArtifacts(bot, data)
+      return this.rateArtifacts(bot, ocrRes)
     } catch (e) {
-      const error = e as AxiosError
-      if (error.isAxiosError) {
-        logger.error(error.response?.data)
-      } else {
-        logger.error(e.toString())
-        return genAtPlainMsg(senderId, '服务器错误')
-      }
-      const data = error.response?.data as RateError
+      logger.error(e)
       const path = join(ROOT_PATH, ARTIFACTS_PATH, './uploadExample.png')
       const file = readFileSync(path)
-      const msg = data?.message ?? '上传图片错误'
+      const msg = '上传图片错误'
       return genAtPlainImageMsg(senderId, msg, buffer2base64url(file))
     }
   }
@@ -107,11 +102,17 @@ export class RateModule {
       for (let i = 0; i < extra.length; i += 2) {
         const key = extra[i]
         if (key == '主') {
-          rateValue.main_item.value = extra[i + 1]
+          if (extra[i + 1].includes('%')) {
+            rateValue.mainStat.type = 'percent'
+          }
+          rateValue.mainStat.value = parseFloat(extra[i + 1].split('%')[0])
         } else if (key.includes('副')) {
           const index = key.charAt(key.length - 1)
           const subIndex = parseInt(index)
-          rateValue.sub_item[subIndex - 1].value = extra[i + 1]
+          if (extra[i + 1].includes('%')) {
+            rateValue.mainStat.type = 'percent'
+          }
+          rateValue.subStats[subIndex - 1].value = parseFloat(extra[i + 1].split('%')[0])
         }
       }
       return this.rateArtifacts(bot, rateValue)

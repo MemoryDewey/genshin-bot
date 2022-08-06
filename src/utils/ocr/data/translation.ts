@@ -27,6 +27,8 @@ export const statRef = {
   dendroDmg: { chs: '草元素伤害加成', eng: 'Dendro Damage' },
 }
 
+export type StatKey = keyof typeof statRef
+
 export const elementsRef = {
   physical: { chs: '物理', eng: 'Physical' },
   anemo: { chs: '风元素', eng: 'Anemo' },
@@ -39,6 +41,20 @@ export const elementsRef = {
 }
 
 export const pieceRef: Record<string, ArtifactSet> = {
+  echoesOfAnOffering: {
+    flower: '魂香之花',
+    plume: '垂玉之叶',
+    sands: '祝祀之凭',
+    goblet: '涌泉之盏',
+    circlet: '浮溯之珏',
+  },
+  vermillionHereafter: {
+    flower: '生灵之华',
+    plume: '潜光片羽',
+    sands: '阳辔之遗',
+    goblet: '结契之刻',
+    circlet: '虺雷之姿',
+  },
   oceanHuedClam: {
     flower: '海染之花',
     plume: '渊宫之羽',
@@ -275,3 +291,5 @@ export const pieceRef: Record<string, ArtifactSet> = {
     circlet: '游医的方巾',
   },
 }
+
+export type Slot = '空之杯' | '时之沙' | '生之花' | '死之羽' | '理之冠'

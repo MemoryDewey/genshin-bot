@@ -2,10 +2,9 @@ import axios from 'axios'
 import { Canvas } from 'canvas'
 import { readFileSync } from 'fs'
 
-export async function getImageFromUrl(
-  url: string,
-  encoding: 'base64' | 'buffer' = 'base64',
-) {
+type Encoding = 'base64' | 'buffer'
+
+export async function getImageFromUrl(url: string, encoding: Encoding = 'base64') {
   try {
     const res = await axios.get(url, { responseType: 'arraybuffer' })
     const imgBuffer = res.data as ArrayBuffer

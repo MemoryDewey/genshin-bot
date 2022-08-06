@@ -30,6 +30,8 @@ export class OneBot {
   private eventSocket!: WebSocket
   // api连接
   private apiSocket!: WebSocket
+  // 是否重连中
+  private isReConnect: boolean
 
   private readonly timeout!: number
 
@@ -70,7 +72,7 @@ export class OneBot {
     }
   }
 
-  private sendGroupMsg(sendInfo: ReplyMessage[], id: number) {
+  public sendGroupMsg(sendInfo: ReplyMessage[], id: number) {
     this.apiSocket.send(
       JSON.stringify({
         action: 'send_group_msg',
@@ -94,20 +96,32 @@ export class OneBot {
     )
   }
 
+  private errorHandle() {
+    const errorCallback = () => {
+      if (!this.isReConnect) {
+        logger.error('EventSocket已断开')
+        logger.info('3s后尝试重新连接.....')
+        this.isReConnect = true
+        setTimeout(() => {
+          this.start()
+        }, 3000)
+      }
+    }
+    this.eventSocket.onclose = errorCallback
+    this.apiSocket.onclose = errorCallback
+    this.eventSocket.onerror = errorCallback
+    this.apiSocket.onerror = errorCallback
+  }
+
   // 启动Bot监听
   public start() {
+    this.isReConnect = false
     this.eventSocket = new WebSocket(this.eventAddress, { timeout: this.timeout })
     this.apiSocket = new WebSocket(this.apiAddress, { timeout: this.timeout })
     this.eventSocket.onopen = () => {
       logger.info('EventSocket已连接')
     }
-    this.eventSocket.onclose = () => {
-      logger.error('EventSocket已断开')
-      setTimeout(() => {
-        logger.info('3s后尝试重新连接')
-        this.start()
-      }, 3000)
-    }
+    this.errorHandle()
     this.eventSocket.on('message', data => {
       const message = JsonString2Object<GroupEventMessage>(data.toString())
       if (message.post_type == 'message') {

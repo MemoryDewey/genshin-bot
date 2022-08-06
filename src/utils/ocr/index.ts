@@ -1,13 +1,13 @@
-import { pieceRef } from './data/translation'
+import { pieceRef, Slot } from './data/translation'
 import { SET_NAME, SLOT_NAME } from './data/artifacts'
 import { guessWith } from './parse/helper'
-import guessMainStat from './parse/guessMainStat'
+import guessMainStat, { Stat } from './parse/guessMainStat'
 import guessSubStats from './parse/guessSubStats'
 import guessEnhancement from './parse/guessEnhancement'
 import { MarvinImage } from 'lib/marvinj'
 import { preprocessArtifact } from './preprocessing'
 import getOcr, { OcrOptions } from './ocr'
-import guessRarity from './parse/guessRarity'
+import guessRarity, { Rarity } from './parse/guessRarity'
 import { RecognizeResult } from 'tesseract.js'
 
 const guessPieceName = guessWith(
@@ -15,13 +15,13 @@ const guessPieceName = guessWith(
   1,
 )
 const guessSetName = guessWith(SET_NAME, 1)
-const guessSlotName = guessWith(SLOT_NAME, 1)
+const guessSlotName = guessWith<Slot>(SLOT_NAME, 1)
 
-export const parseArtifact = (
+export function parseArtifact(
   topData: RecognizeResult,
   botData: RecognizeResult,
   setData: RecognizeResult,
-) => {
+) {
   const mainStat = guessMainStat(topData)
   const subStats = guessSubStats(botData)
   const set = guessSetName(setData)
@@ -31,8 +31,21 @@ export const parseArtifact = (
   return { mainStat, subStats, set, slot, piece }
 }
 
+export interface OcrResponse {
+  mainStat: Stat
+  subStats: Stat[]
+  set: string
+  slot: Slot
+  piece: string
+  rarity: Rarity
+  enhancement: number
+}
+
 type Options = { onProgress?: OcrOptions['onProgress'] }
-export const artifactOcr = async (imageData: string, options: Options = {}) => {
+export async function artifactOcr(
+  imageData: string,
+  options: Options = {},
+): Promise<OcrResponse> {
   console.time('Marvin Deal Image:')
   const marvinLoad = (url: string): Promise<MarvinImage> => {
     return new Promise(resolve => {

@@ -1,7 +1,8 @@
 import { getValueType, parseStatKey, removeGarbo } from './helper'
 import { RecognizeResult } from 'tesseract.js'
+import { Stat } from './guessMainStat'
 
-const guessSubStats = (data: RecognizeResult) => {
+const guessSubStats: (data: RecognizeResult) => Stat[] = data => {
   // assume substat lines are in the shape of "name+value(%)"
   return data.data.lines
     .map(line => {

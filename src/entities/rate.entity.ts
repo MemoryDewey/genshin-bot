@@ -1,6 +1,6 @@
 import { Column, Entity } from 'typeorm'
 import { Base } from './base'
-import { OcrResponse } from '../interfaces'
+import { OcrResponse } from 'src/utils'
 
 @Entity()
 export class Rate extends Base {
