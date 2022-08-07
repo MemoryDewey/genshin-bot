@@ -1,12 +1,14 @@
 # Genshin Bot
 
->使用Typescript编写的原神QQ机器人
+>基于 onebot 使用 Typescript 编写的原神QQ机器人
 
 **这个项目目前正在扩展，加入更多原神相关娱乐和信息查询功能，敬请期待**
 
 ## 简介
 
 原神QQ机器人，包含圣遗物评分以及抽卡分析等功能
+<br>
+圣遗物识别 OCR 采用 [Tesseract](https://github.com/naptha/tesseract.js) 实现，识别速度取决于 CPU/GPU 运算
 
 ## 安装
 1. 安装[go-cqhttp](https://github.com/Mrs4s/go-cqhttp)
@@ -27,9 +29,9 @@
    git clone https://gitee.com/miinori/genshin-bot.git
    ```
 
-6. 编辑目录下的.env文件，根据自己的go-cqhttp配置修改对应的配置
+5. 编辑目录下的.env文件，根据自己的go-cqhttp配置修改对应的配置
 
-7. 启动
+6. 启动
    ```shell
    yarn install
    yarn start
@@ -73,11 +75,13 @@
 ## 致谢
 **[go-cqhttp](https://github.com/Mrs4s/go-cqhttp)**
 
-**[可莉特调](https://genshin.pub)**
-
 **[Genshin_Impact_bot](https://github.com/H-K-Y/Genshin_Impact_bot)**
 
 ## 更新记录
+
+### 2022-08-07
+* 移除调用可莉特调接口的方式识别圣遗物
+* 采用 Tesseract 识别圣遗物
 
 ### 2021-12-31
 * 移除miria, 使用 onebot 架构(go-cqhttp)
